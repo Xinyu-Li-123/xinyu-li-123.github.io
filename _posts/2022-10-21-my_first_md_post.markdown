@@ -18,5 +18,9 @@ def foo(n=10):
 
 Start time: {{ site.time | slice: 0, 16}}
 
+This is an equation: $$ \sqrt{x} = 2 $$. This is another but on a different line
+
+$$ y^2 = 3 $$
+
 <img src="/images/lucky_star.jpg" />
 
