@@ -21,9 +21,7 @@
 title: Xinyu's Blog
 email: eigerli@outlook.com
 description: >- # this means to ignore newlines until "baseurl:"
-  A website to document my learning note. Posts on this websits are mainly about Mathematics, AI, Computer Science. 
-  The main audience of these posts is me from the futures, which is not that different from you, the reader.
-  I will try to balance between concision, depth, and readability. Enjoy :)
+  Math, CS, and AI.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  xinyu-li-123

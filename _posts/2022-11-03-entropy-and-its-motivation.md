@@ -1,16 +1,16 @@
 ---
 layout: math_post
-title: Entropy and its motivation
+title: Entropy and the Quantification of Information
 ---
 
-<img src="/images/0002.jpg">
+This blog documents my understanding of entropy. It is pretty much a reading note of [the famous paper](https://doi.org/10.1002/j.1538-7305.1948.tb01338.x) written by C.E. Shannon.
 
-Hello $$x = 2$$
+Lorem ipsum
 
-$$y=3$$
+## Information Content
 
-Information is untangible, but we can quantify it in a way that matches our intuition. 
+$1$ lorem ipsum lorem ipsum 
 
-An amount of information.
+$$1$$
 
-The number is meaningful only when it's in relation to other numbers. For example, "film A contains 10000 unit of information" means nothing unless we can also say "film B contains 20000 unit of information, thus it's more informative than film A".
+## Entropy
