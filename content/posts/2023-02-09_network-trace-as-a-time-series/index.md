@@ -1,7 +1,9 @@
 +++
 date = '2024-02-19T01:00:34-04:00'
-draft = false
+draft = true
 title = 'Network Trace as a Time Series'
+mathjax = true
+tags = ["aaa", "bbb"]
 +++
 
 In this post, we will discuss how a network trace can be represented as a time series, i.e. a realization of a stochastic process. Then, we will analyze the [NetShare model]() using our framework.
@@ -27,45 +29,45 @@ Note the subtle difference between **the distribution of packet size** and **the
 ## Network Trace as a Time Series
 
 ### Stochastic Process
-Given a probability space $(\Omega, \mathcal{F}, \mathcal{P})$ and a measurable space (state space) $(\mathcal{S}, \Sigma) \in \mathbb{R}^M$, a **stochastic process** is a collection of $S$-valued random variables $X=\{X_t=(X^1_t,...,X^M_t)=(X^i_t)\}_{t=1,...,T}$ indexed by $t$.[^1] We assume that $X_t$'s are identically distributed, but not necessarily independent.
+Given a probability space \((\Omega, \mathcal{F}, \mathcal{P})\) and a measurable space (state space) \((\mathcal{S}, \Sigma) \in \mathbb{R}^M\), a **stochastic process** is a collection of \(S\)-valued random variables \(X=\{X_t=(X^1_t,...,X^M_t)=(X^i_t)\}_{t=1,...,T}\) indexed by \(t\).[^1] We assume that \(X_t\)'s are identically distributed, but not necessarily independent.
 
-A natural choice of $t$ is time, $X_t$ is thus a random variable representing the values observed at time t. In the context of time series, we usually assume that $t$ is evenly spaced.
+A natural choice of \(t\) is time, \(X_t\) is thus a random variable representing the values observed at time t. In the context of time series, we usually assume that \(t\) is evenly spaced.
 
 In practice, we care about three things: 
-- the state space $S$
-- the distribution of $X_t$
-- the correlation between $X_t$'s. 
+- the state space \(S\)
+- the distribution of \(X_t\)
+- the correlation between \(X_t\)'s. 
 
 ### Time Series
-Given a stochastic process $X=\{X_t\}_{t=1,...,T}$, a **time series** $D=\{D_t\}_{t=1,...,T}$ is a realization of $X_t$ ($D$ is for data). 
+Given a stochastic process \(X=\{X_t\}_{t=1,...,T}\), a **time series** \(D=\{D_t\}_{t=1,...,T}\) is a realization of \(X_t\) (\(D\) is for data). 
 
-Whereas the stochastic process $X_t$ is a collection of random variables (measureable functions from $\Omega$ to $S$), a time series is a collection of values in state space $S$.
+Whereas the stochastic process \(X_t\) is a collection of random variables (measureable functions from \(\Omega\) to \(S\)), a time series is a collection of values in state space \(S\).
 
 One can analyze time series data to infer properties of the underlying stochastic process, that is, the distribution of r.v. and temporal dependence between r.v.'s.
 
 ### Network Trace and Network Traffic Process
-A **network trace** $D$ is a time series. It is sampled from a stochastic process, which we will refer to as the **Network Traffic Process**. 
+A **network trace** \(D\) is a time series. It is sampled from a stochastic process, which we will refer to as the **Network Traffic Process**. 
 
-The state space $S$ contains all header values and derived values of interest. For example, 
+The state space \(S\) contains all header values and derived values of interest. For example, 
 
-$S=\{(srcip,\, dstip,\, srcport,\, dstport,\, proto)\} \in \mathbb{\{0,1\}}^{32+32+16+16+16+16}$ 
+\(S=\{(srcip,\, dstip,\, srcport,\, dstport,\, proto)\} \in \mathbb{\{0,1\}}^{32+32+16+16+16+16}\) 
 
 We can also add values derived from the observation to the state space, such as packet length or attack type.
 
-**For network trace, we need to choose the index t carefully**. Time series analysis requires $t$ to be evenly spaced. Although we can achieve this by setting $t$ to be the smallest possible time interval between two captured packets (e.g. 1ms), the resulting time series may be too long and sparse for any practical analysis. Another solution is to use packet ordinal ($t^{th}$ packet) as an index, and consider the captured timestamp itself as a state. But this method is divergent from the convention of classical time series analysis.
+**For network trace, we need to choose the index t carefully**. Time series analysis requires \(t\) to be evenly spaced. Although we can achieve this by setting \(t\) to be the smallest possible time interval between two captured packets (e.g. 1ms), the resulting time series may be too long and sparse for any practical analysis. Another solution is to use packet ordinal (\(t^{th}\) packet) as an index, and consider the captured timestamp itself as a state. But this method is divergent from the convention of classical time series analysis.
 
 ### Network Trace and Panel Data
 
 Here, we will bridge the panel data representation of network trace to our definition.
 
-A network trace can be represented as a [panel data](https://en.wikipedia.org/wiki/Panel_data) (table) $D = (D^i_t)$ for state $i=1,...,M$ and time $t = 0,...,T$. We can use $D^i$ to represent the $i^{th}$ column of the panel, and $D_t$ the $t^{th}$ row. 
+A network trace can be represented as a [panel data](https://en.wikipedia.org/wiki/Panel_data) (table) \(D = (D^i_t)\) for state \(i=1,...,M\) and time \(t = 0,...,T\). We can use \(D^i\) to represent the \(i^{th}\) column of the panel, and \(D_t\) the \(t^{th}\) row. 
 
-Here, the column $D_t$ is the packet captured at time $t$, whereas row $D^i$ is the temporal evolution of state $i$ (e.g. first bit of source ip address).
+Here, the column \(D_t\) is the packet captured at time \(t\), whereas row \(D^i\) is the temporal evolution of state \(i\) (e.g. first bit of source ip address).
 
 Using our time-series definition of network trace, we can see that 
-- the state space is $M$ dimension.
-- $D_t$ is a sample from $X_t$, the stochastic process at time $t$.
-- $D^i$ is the dependent sampling of $X^i$ for $T$ times. A frequency analysis on $D^i$ can give an approximation of distribution of 
+- the state space is \(M\) dimension.
+- \(D_t\) is a sample from \(X_t\), the stochastic process at time \(t\).
+- \(D^i\) is the dependent sampling of \(X^i\) for \(T\) times. A frequency analysis on \(D^i\) can give an approximation of distribution of 
 
 ## [Unfinshed] Implication of the Model
 
