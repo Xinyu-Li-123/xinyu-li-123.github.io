@@ -110,6 +110,7 @@ expiryDate = ["expiryDate"]
   homeSubtitlePrinter = true
   scrollToTop = true 
   global_mathjax = false
+  global_toc = true
   readTime = true
   # readTimeSeparator = "CHANGE ME READ TIME"
   # legacyLayout = false
