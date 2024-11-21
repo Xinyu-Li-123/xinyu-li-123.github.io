@@ -77,6 +77,14 @@ expiryDate = ["expiryDate"]
          block = [['\[', '\]'], ['$$', '$$']]
          inline = [['\(', '\)']]
 
+[related]
+  includeNewer = true
+  threshold = 80
+  toLower = false
+
+[[related.indices]]
+  name = "tags"
+  weight = 100
 
 [params]
   dateform        = "Jan 2, 2006"
