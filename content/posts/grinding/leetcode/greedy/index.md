@@ -6,7 +6,9 @@ mathjax: true
 tags: ['Grinding', 'LeetCode']
 ---
 
-## 区间调度问题
+## 区间贪心
+
+### 区间调度问题
 
 **Interval Scheduling Problem (ISP)**: Given a set of nonempty intervals \(I = \{I_k = (s_{I_k}, f_{I_k}) \:|\: k=1,2,\dots,n\}\), find a subset \(OPT(I) \subset I \) s.t. 
 
@@ -18,6 +20,10 @@ tags: ['Grinding', 'LeetCode']
 \end{align*}\]
 
 i.e. \(OPT(I)\) is the largest among all subsets of \(I\) consisting of non-overlapping invervals.
+
+An equivalent (and more intuitive) definition of \(OPT(I)\) is 
+
+> \(OPT(I)\) is the largest subset of \(I\) s.t. for any \(J \in I\) and \(J' \in OPT(I)\), we have \(J \cap J' \not= \emptyset\).
 
 **Algorithm: Earliest Finishing Time**
 
@@ -31,7 +37,7 @@ The solution \(EFT(I) \subset I\) is constructed as follows
 
 What makes this algorithm interesting is this property: 
 
-> for any \(J \in I\) and \(J' \in EFT(I)\), if \(J \cap J' \not= \emptyset\), we have \(f_J \geq f_{J'}\)
+> For any \(J \in I\) and \(J' \in EFT(I)\), if \(J \cap J' \not= \emptyset\), we have \(f_J \geq f_{J'}\)
 
 **Proof**
 
@@ -63,17 +69,38 @@ This concludes the proof.
 
 ### [452. Minimum Number of Arrows to Burst Balloons](https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/description/)
 
+我们将气球看作闭区间，将“戳破多个相叠气球”看作“多个闭区间相交，在交集中射一箭”，则题目可以转换成以下问题：
 
+> 对于`points`，最优解`opt_points`是满足以下性质的最小子数组
+> 
+> 1. 任意`points`中的区间和任意`opt_points`中的区间都有交集 
 
-### [435]()
+根据前文所属ISP问题的等价定义，可知该问题等价于ISP。则根据\(EFT\)可以构造出一组最优解。
 
-### [763]()
+具体实现思路如下
+
+1. 按结束时间对所有区间排序
+
+2. 从第一个区间开始，取当前区间和所有与之相交的区间，记录箭数+1，跳过这些区间
+
+3. 重复2.直到所有区间都被遍历过。
+
+在理解了ISP的解法后，这道题是简单的。然而没听说过ISP的情况下，很容易尝试一些错误的贪心解法，我第一次就陷入“每次向相交气球最多的区间射箭”的错误思路，结果完全写不出这道题。
+
+### [435. Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/description/)
+
+比较明显的ISP的应用，根据ISP求出的最大不相交子集的补集，就是题解。
+
+### [763. Partition Labels](https://leetcode.com/problems/partition-labels/description/)
+
+### [56. Merge Intervals](https://leetcode.com/problems/merge-intervals/description/)
+
 
 ## 杂项
 
 没什么规律的贪心题目。
 
-### [113. Gas Station](https://leetcode.com/problems/gas-station)
+### [113. Gas Station](https://leetcode.com/problems/gas-station/description/)
 
 思路：
 
