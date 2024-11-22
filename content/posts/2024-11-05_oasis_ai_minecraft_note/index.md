@@ -44,6 +44,10 @@ Oasis是否是Game Engine我认为仍然存疑，因为Game Engine应该更注�
 
 读别人的游戏体验时，有看到有人称Oasis为[非欧空间](https://en.wikipedia.org/wiki/Non-Euclidean_geometry)。我个人倒不是很想把Oasis归类到非欧空间。倒不如说这里根本就没有空间的概念。非欧空间只是公理不同于欧式空间，而且两者都有一个3D表示投影到2D屏幕的过程。但Oasis则是直接生成了2D的投影。作为对比，像[Hyperbolica](https://store.steampowered.com/app/1256230/Hyperbolica/)的游戏我认为才能被算作非欧空间。
 
-## 原理
+<!-- ## 原理
 
-### 扩散模型
+## Genesis (CMU Robotics)
+
+AI generate objects with physics simulation (AI-gen assets, existing physics sim), and AI-generated camera movement, instead of single image. Could be adapted to an AI game engine!
+
+e.g. we can ask AI to generate a shopping mall or Mount Everest. -->
