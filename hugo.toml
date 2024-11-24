@@ -98,7 +98,7 @@ expiryDate = ["expiryDate"]
 
   homeSubtitle = "CS, Math and AI"
   footerCopyright = "CC BY-NC 4.0"
-  footerHideThemeName = true
+  footerHideThemeName = false
   bgImg = "/image/background_002.jpg"
   # gitUrl = "https://github.com/1bl4z3r/hermit-V2/tree/staging"
 
