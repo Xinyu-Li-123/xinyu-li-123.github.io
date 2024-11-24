@@ -169,6 +169,46 @@ The entire process is the same as saying
 
 状态转移方程为`dp[j][k] = max(dp[j][k], dp[j-count_0[i]][k-count_1[i]])`，即选或不选`strs[i]`得到的最大子集大小。
 
+### [518. Coin Change II](https://leetcode.com/problems/coin-change-ii/description/)
+
+比较明显的完全背包。一个注意的点是`dp`数组得是`uint64_t`，否则在存储中间结果时会integer overflow。
+
+### [377. Combination Sum IV](https://leetcode.com/problems/combination-sum-iv/description/)
+
+很有意思的一个问题。如果求所有可能的排列 / 组合，那么就只能回溯。但这道题求的是排列的数量，就能DP。
+
+另外，用DP可以求完全背包的排列数量和组合数量，其代码正好是相反的。
+
+首先明确一下定义：排列（permutation）是有顺序的，组合（combination）是没有顺序的。`(1, 5)`和`(5, 1)`是同一个组合，不同的排列。
+
+对于完全背包的组合数量，我们先循环物品，再循环背包。
+
+```cpp
+for (int i = 0; i < nums.size(); i++) {
+    for (int j = nums[i]; j <= capacity; j++) {
+        dp[j] = dp[j] + dp[j - nums[i]];
+    }
+}
+```
+
+这一写法会使最后的选择方案里，物品必然按照`nums`的顺序排序。假如`nums = {1, 2, 3, 4, 5}`，那么就不可能出现`5`在`1`前的方案。换句话说，对于属于统一组合的不同排列，我们只取按照物品排序和`nums`相同的方案（这一方案显然是唯一的）。
+
+对于完全背包的排列数量，我们先循环背包，再循环物品
+
+```cpp
+for (int j = 0; j <= capacity; j++) {
+    for (int i = 0; i < nums.size() && nums[i] <= j; i++) {
+        dp[j] = dp[j] + dp[j - nums[i]];
+    }
+}
+```
+
+这一写法则保证了在考虑`dp[j]`时，`dp[k]， k < j`的方案数量时考虑了全部物品的方案数量。
+
+### [322. Coin Change](https://leetcode.com/problems/coin-change/)
+
+At `i`, `dp[j]` is the fewest number of coins needed to reach amount `j` considering `coins[0]` to `coins[i]`.
+
 ## 打家劫舍
 
 ## 股票
