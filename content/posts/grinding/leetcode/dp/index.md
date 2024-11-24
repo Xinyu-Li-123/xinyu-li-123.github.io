@@ -52,6 +52,123 @@ DP三问：
 
 ## 背包 DP
 
+### 基础理论
+
+> 有`n`个物品和容量为`W`的背包，每个物品有重量`weight[i]`和价值`value[i]`两种属性。要求选取若干物品放入背包，使得总价值最大且不超过背包重量。
+
+#### 0-1背包
+
+在上述题目基础上，每个物品只能选一次。
+
+**二维DP**
+
+构造`(n, W)`二维DP数组`dp`。`dp[i][j]`表示
+
+> 在物品`0`到物品`i`中选择，容量为`j`的背包所能装下的最大价值为`dp[i][j]`。
+
+到达`dp[i][j]`的方式有两种：
+
+1. 不放物品`i`
+
+    则最大价值为只能选前`i-1`个物品，容量为`j`的背包所能装下的最大价值
+
+2. 放物品`i` 
+
+    则最大价值为`value[i]`加上选前`i-1`个物品，容量为`j-weight[i]`的背包所能装下的最大价值
+
+对应的状态转移方程为
+
+```cpp
+dp[i][j] = max(dp[i-1][j], dp[i-1][j-weight[i]] + value[i]])
+```
+
+对应的核心代码为
+
+```cpp 
+// We declare a 2d array of size (n+1, W) for convenience
+for (int i = 0; i < n; i++) {
+    for (int j = W - weight[i]; j < W; j++) {
+        dp[i+1][j+1] = max(dp[i][j], dp[i][j-weight[i]] + value[i]])
+    }
+}
+```
+
+**滚动数组**
+
+考虑空间复杂度，我们可以用滚动数组代替二维数组。
+
+对于当前的`i`，`dp[j]`表示选前`i`个物品，容量`j`的背包所能装下的最大价值。
+
+对应的核心代码为
+
+```cpp
+// We declare a 1d array of size W
+for (int i = 0; i < n; i++) {
+    for (int j = W-1; j >= weight[i]; j--) {
+        dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
+    }
+}
+```
+
+值得注意的是，里面一层循环是**从后往前**的。这是因为`dp[i][j]`是由`dp[i-1][j]`和`dp[i-1][j-weight[i]]`决定的。从后往前更新一维数组时，在对`i`更新到`dp[j]`时，`dp[j-weight[i]]`还没有被更新，仍然是`i-1`时更新的结果，**此时的`dp[j-weight[i]]`表示“选前`i-1`个物品，容量为`j-weight[i]`的背包所能装下的最大价值”**。
+
+#### 完全背包
+
+完全背包中，物品可被选择无数次。
+
+由上文滚动数组的分析，我们可以引申出完全背包的滚动数组解法：和0-1背包类似，但从前往后更新滚动数组。
+
+这是因为从前往后更新，对`i`更新到`dp[j]`时，`dp[j-weight[i]]`已经是对`i`更新后的结果，**其含义为“选前`i`个物品，容量为`j-weight[i]`的背包所能装下的最大价值”**。
+
+在上述题目基础上，每个物品可以选取无数次。
+
+### [416. Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/description/)
+
+思路：目标和`tgt_sum`为`nums`总和的一半。则可以把问题转换为对于容量为`tgt_sum`的背包，让`weight[i] = value[i] = nums[i]`。如果最大价值等于`tgt_sum`，则表示可以等分集合。
+
+### [1049. Last Stone Weight II](https://leetcode.com/problems/last-stone-weight-ii/description/)
+
+考虑题目给出的例1，石头相撞的过程如下
+
+```
+We can combine 2 and 4 to get 2, so the array converts to [2,7,1,8,1] then,
+we can combine 7 and 8 to get 1, so the array converts to [2,1,1,1] then,
+we can combine 2 and 1 to get 1, so the array converts to [1,1,1] then,
+we can combine 1 and 1 to get 0, so the array converts to [1], then that's the optimal value.
+```
+
+可以表示成
+```
+Given [2, 7, 4, 1, 8, 1]
+4 - 2 => [(4-2), 7, 1, 8, 1]
+8 - 7 => [(4-2), 1, 1, (8-7)]
+(4-2) - 1 = 2 - 1 => [(4-2-1), 1, (8-7)]
+(4-2-1) - 1 = 1 - 1 => [(8-7)]
+
+The entire process is the same as saying 
+4 - 2 - 1 - 1 + 8 - 7 = 1
+```
+
+上述过程可以被解释为“加或减每个数组中的数字，所能得到的最小非负值”。
+
+这一过程也可以被解释为“分割数组为两个子数组，求两个子数组之和的最小差值”。这就回到了416的分割子集的思路。
+
+### [494. Target Sum](https://leetcode.com/problems/target-sum/description/)
+
+题目可以这样理解：将数组分割成两个子数组，各自的和分别为`x`和`y`（不妨设`x > y`）。求能满足`x-y=target`的分割方法的数量。
+
+已知`x+y=sum(nums), x-y=target`，则可知`y=(sum(nums)-target)/2`，题目可以等价为求出在数组中任选数字、其和为`y`的选择方法数量。
+
+`dp[j]`表示选前`i`个物品，可以填满容量为`j`的背包的选择方法的数量。对应的状态转移方程为`dp[i][j] = dp[i-1][j] + dp[i-1][j-weight[i]]`。
+
+### [474. Ones and Zeroes](https://leetcode.com/problems/ones-and-zeroes/description/)
+
+`dp`是大小为`(m+1, n+1)`的二维滚动数组。
+
+对于当前的`i`，`dp[j][k]`表示在前`i`个字符串里选择，能满足`at most j 0's and n 1's in the subset`的最大子集大小。
+
+状态转移方程为`dp[j][k] = max(dp[j][k], dp[j-count_0[i]][k-count_1[i]])`，即选或不选`strs[i]`得到的最大子集大小。
+
 ## 打家劫舍
 
 ## 股票
