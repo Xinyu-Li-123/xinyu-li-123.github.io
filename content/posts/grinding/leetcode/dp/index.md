@@ -209,6 +209,52 @@ for (int j = 0; j <= capacity; j++) {
 
 At `i`, `dp[j]` is the fewest number of coins needed to reach amount `j` considering `coins[0]` to `coins[i]`.
 
+### [279. Perfect Squares](https://leetcode.com/problems/perfect-squares/description/)
+
+物品的重量是完全平方数，每个物品价值为1，背包总容量是`n`，完全背包。
+
+对于当前`i`，`dp[j]`表示在完全平方数`1^2, 2^2, ... i^2`中选择，总和为`j`，所需要的**最小数量**。
+
+例如，对于`i = 2`，`dp[12] = 3`，对应的选择为`4 + 4 + 4`；而对于`i = 3`，`dp[12] = 2`，对应的选择是`4 + 9`。
+
+状态转移方程为
+
+```cpp
+for (int i = 1; i * i < n; i++) {
+    for (int j = i * i; j < dp.size(); j++) {
+        dp[j] = min(dp[j], dp[j - i*i] + 1);
+    }
+}
+```
+
+### [139. Word Break](https://leetcode.com/problems/word-break/description/)
+
+背包的物品是`wordDict`中的单词，考虑到这道题要判断的是单词的组合（而非排列）能否构成字符串，我们需要按照组合背包的方法写代码，即先循环背包容量、后循环物品。
+
+`dp[j]`的含义为：`wordDict`中的所有单词能否构成字符串`s[:j]`。状态转移时需要判断`s[:j-cur_word.size()]`能否被构成，以及`s[j-cur_word: cur_word]`和`cur_word`是否相等。
+
+核心代码为
+
+```cpp
+dp[0] = true;
+
+for (int j = 1; j < dp.size(); j++) {
+    for (int i = 0; i < wordDict.size(); i++) {
+        if (dp[j]) {
+            // s[:j] can be constructed using words in wordDict[:i]
+            break;
+        }
+        const string& cur_word = wordDict[i];
+        if (j < cur_word.size()) {
+            continue;
+        }
+        const string& cur_substr = s.substr(j - cur_word.size(), cur_word.size());
+        // State Transition
+        dp[j] = dp[j - cur_word.size()] && (cur_word == cur_substr);
+    }
+}
+```
+
 ## 打家劫舍
 
 ## 股票

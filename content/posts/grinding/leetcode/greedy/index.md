@@ -93,8 +93,11 @@ This concludes the proof.
 
 ### [763. Partition Labels](https://leetcode.com/problems/partition-labels/description/)
 
+Convert each letter into an interval that tightly covers its presence, sort by start index, and greedily iterate-and-merge the intervals
+
 ### [56. Merge Intervals](https://leetcode.com/problems/merge-intervals/description/)
 
+略，同763
 
 ## 杂项
 

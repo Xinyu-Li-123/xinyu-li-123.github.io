@@ -6,5 +6,9 @@ mathjax: true
 tags: ['Grinding', '八股', 'CPP']
 ---
 
-foobar
+## 语法
+
+`MyClass my_var(42)` vs `MyClass my_var{42}`?
+
+- 
 
