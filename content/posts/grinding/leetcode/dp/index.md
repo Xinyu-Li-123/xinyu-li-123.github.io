@@ -257,6 +257,51 @@ for (int j = 1; j < dp.size(); j++) {
 
 ## 打家劫舍
 
+### [198. House Robber](https://leetcode.com/problems/house-robber/description/)
+
+dp数组含义如下:
+
+- `dp[i][0]`表示不打劫第i间房时，最大收益
+
+- `dp[i][1]`表示打劫第i间房时，最大收益
+
+状态转移方程为
+
+```cpp
+dp[i][0] = max(dp[i-1][0], dp[i-1][1]);
+// Since we can't rob two adjacent houses, we must not rob house i-1 if we rob house i
+dp[i][1] = dp[i-1][0] + nums[i-1];
+```
+
+### [213. House Robber II](https://leetcode.com/problems/house-robber-ii/description/)
+
+在环上打劫，不能打劫相邻住户。可以**分类处理**问题。由于不能同时打劫第0和n家，我们可以将问题分类为
+
+- 打劫第0家：只能打劫第0到n-1家。
+
+- 不打劫第0家：只能打劫第1到n家。
+
+### [337. House Robber III](https://leetcode.com/problems/house-robber-iii/description/)
+
+在树上打劫，不能打劫在树上直接相连的住户。后序dfs遍历树，每个节点计算两个状态
+
+- 不打劫该节点，考虑所有子节点和当前节点，最大收益
+
+- 打劫该节点，考虑所有子节点和当前节点，最大收益
+
+由于是后序遍历，考虑当前节点时，已经计算出左右字节点的两个状态，故可以推出当前状态。
+
+状态转移方程为
+
+```cpp
+vector<int> left_vals = postorder(cur->left);
+vector<int> right_vals = postorder(cur->right);
+return {
+    *max_element(left_vals.begin(), left_vals.end()) + *max_element(right_vals.begin(), right_vals.end()),
+    left_vals[0] + right_vals[0] + cur->val
+};
+```
+
 ## 股票
 
 有通解。
