@@ -308,6 +308,47 @@ return {
 
 ## 子序列
 
+### [72. Edit Distance](https://leetcode.com/problems/edit-distance/description/)
+
+TODO: 
+
+### [647. Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/description/)
+
+这道题不能使用类似于“以`i`结尾的子字符串”去做，找不到明显的递推关系。
+
+回文的递推关系：对于`q - p > 2`，如果`s[p: q]`是回文，那么`s[p-1: q+1]`是回文。
+
+由此可得`dp[i][j]`的含义为`s[i-1: j]`（以`s[i-1]`开始，`s[j-1]`结束的子字符串）是否为回文，对应的状态转移方程为
+
+```cpp
+// when 0 <= j-i < 2 (1 or 2 char, not applicable for recursion)
+dp[i][j] = s[i-1] == s[j-1]
+// when j-i > 2, s[i-1: j] depends on s[i: j-1]
+dp[i][j] = (s[i-1] == s[j-1]) && dp[i+1][j-1]
+```
+
+值得注意，`dp[i][j]`依赖于`dp[i+1][j-1]`，所以更新顺序应该为`i`从大到小，`j`从小到大，且根据区间的定义，`i <= j`。
+
+### [516. Longest Palindromic Subsequence](https://leetcode.com/problems/longest-palindromic-subsequence/description/)
+
+基本思路和上题一样，`dp[i][j]`表示的是区间，递推是从小区间推到大区间。
+
+`dp[i][j]`表示`s[i-1: j]`的最长回文长度。
+
+值得注意的是，对于`s[i-1: j]`的最长回文长度，不同于上题，我们需要看三个子区间:`s[i-1: j-1]`，`s[i: j]`，如果`s[i-1] == s[j+1]`，那还需要考虑`s[i-1: j]`。比如说`bbbaab`，在计算`bbaa`的最长回文长度时，我们需要考虑`bba`，`baa`。只看中间的`ba`是不够的。
+
+由此可得状态转移方程为
+
+```cpp 
+dp[i][j] = max({
+    dp[i+1][j],
+    dp[i][j-1],
+    dp[i+1][j-1] + (s[i-1] == s[j-1]) * 2
+});
+```
+
+与上题相同，更新顺序应该为`i`从大到小，`j`从小到大，且根据区间的定义，`i <= j`。
+
 ## 区间 DP
 
 <!-- ### 416. 分割等和子集 (01背包-要求恰好取到背包容量)
