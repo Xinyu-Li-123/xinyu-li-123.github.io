@@ -10,9 +10,9 @@ tags: ['Grinding', 'LeetCode']
 
 本文档默认遵循C++17标准。
 
-## Language
+# Language
 
-### for loop
+## for loop
 
 A typical for loop
 
@@ -37,9 +37,9 @@ for (const auto&[k, v] : freqs) {
 }
 ```
 
-## STL
+# STL
 
-### Vector常用操作
+## Vector常用操作
 
 ```cpp
 vector<int> arr(10, 0);
@@ -63,15 +63,16 @@ arr.emplace_back(34);
 arr.pop_back();
 ```
 
-### Misc
+## Misc
 
-Define a 2d array using vector
+### Define a 2d array using vector
 
 ```cpp
 vector<vector<int>>(numRows, vector<int>(numCols, 0));
 ```
 
-Is element in set
+### Is element in set
+
 ```cpp
 template <typename T>
 bool exists(T elem, unordered_set<T> &uset) {
@@ -79,7 +80,8 @@ bool exists(T elem, unordered_set<T> &uset) {
 }
 ```
 
-Create a min heap (top is min element)
+### Create a min heap (top is min element)
+
 ```cpp
 // priority_queue<T, Container, Compare>
 // Compare(A, B) returns true if A < B.
@@ -100,7 +102,8 @@ while (!minHeap.empty()) {
 cout << endl;
 ```
 
-Create a max heap with custom comparison function
+### Create a max heap with custom comparison function
+
 ```cpp
 struct Log {
     char user;
@@ -154,21 +157,17 @@ void customCmpDemo() {
 }
 ```
 
-Multiset
-```cpp
-```
+## Common code snippet
+
+#### 遍历一格的上下左右格子
 
 ```cpp
-```
+dRows = {-1, 0, 1, 0};
+dCols = {0, -1, 0, 1};
 
-```cpp
-```
+// iterate through the up/left/down/right neighbors of (curRow, curCol)
 
-```cpp
-```
-
-```cpp
-```
-
-```cpp
+for (int p = 0; p < 4; p++) {
+    process(curRow + dRows[p], curCol + dCols[p]);
+}
 ```
