@@ -449,7 +449,41 @@ public:
 
 ## Union-Find Set
 
-Given a graph (node, edge), determine if two elements are connected.
+并查集适用于判断**无向图的连通性**，既判断无向图中两个节点是否相连。
+
+并查集有两个操作：将两个元素并入同一个集合，或者判断两个元素是否属于同一个集合。
+
+我们维护每一个节点的根节点
+
+- 初始化时，每个节点的根节点是自己，表示所有节点都不相连
+
+- 我们遍历无向图的边，并将每条边的端点并入同一个集合：对于边`(A, B)`，我们把B的根节点接在A的根节点下，这样所有与B相连的节点都与A相连。
+
+- 最后，所有相连的节点都会有相同的根节点
+
+**路径压缩**：
+
+依照这个算法，我们最后会得到多颗树，每颗树表示一群相连接的节点。但这些树的高度可能会很高，使得查询节点是否相连变得困难。实际上，我们只在乎一个节点的根节点是什么，我们完全可以在合并时，直接把一个节点连接到另一个节点的根节点上，最后得到一颗高度只有2的树。
+
+为了实现这个优化，每次调用`find(u)`时我们都把从`u`到根节点的所有节点直接连接到根节点上。例如从节点`u0`到根节点`r`，需要经过`u1, u2`。调用`find(u0)`时，`find`会递归调用直到找到根节点，从而将`u0, u1, u2`都直接连接到`r`。对应的代码如下
+
+```cpp
+// find the root of u
+int find(int u) {
+    if (u == father[u]) {
+        return u;
+    }
+    // Path compression
+    // Note that both isSameSet() and join() would invoke
+    // find(), which would compress the path
+    father[u] = find(father[u]);
+    return father[u];
+}
+```
+
+值得注意，并查集不适用于有向图的连通性。
+
+以判断两节点是否相连为例，并查集模板代码如下：
 
 ```cpp
 class UnionFind {
@@ -457,6 +491,7 @@ private:
     int n;
     vector<int> father;
 public:
+    // check if two nodes are connected
     bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {
         father = vector<int>(n);
         for (int i = 0; i < n; i++) {
@@ -474,6 +509,9 @@ public:
         if (u == father[u]) {
             return u;
         }
+        // Path compression
+        // Note that both isSameSet() and join() would invoke
+        // find(), which would compress the path
         father[u] = find(father[u]);
         return father[u];
     }
