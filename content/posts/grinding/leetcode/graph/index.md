@@ -17,6 +17,26 @@ void dfs(cur_node, path) {
 }
 ```
 
+### Print each layer in tree on separate line 
+
+Use BFS. In each iteration of for loop, print the entire layer. 
+
+Layer length = queue length 
+
+```cpp
+while (!qu.empty()) {
+    int len = qu.size();
+    for (int i = 0; i < len; i++) {
+        auto cur = qu.pop();
+        cout << cur.val << ", ";
+        for (const auto& child : cur.children) {
+            qu.push(child);
+        }
+    }
+    cout << endl;
+}
+```
+
 ### [797. All Paths From Source to Target](https://leetcode.com/problems/all-paths-from-source-to-target/description/)
 
 DFS search the DAG. Backtracking from 0 to n-1.
@@ -538,7 +558,99 @@ public:
 
 ### Redundant Connection I & II 
 
-### Minimal Spanning Tree, Prim & Kruskal
+## Minimal Spanning Tree
+
+### Minimal Spanning Tree, Prim
+
+Goal: Given an **undirected, weighted graph**, find the **spanning tree with minimal cost** (sum of edge weight in the tree).
+
+Idea: **Greedly rebuild the spanning tree by adding node**, starting from an arbitrary node.
+
+1. Start with an arbitrary node,
+
+2. Among all nodes not in the current tree, include the node whose connection to nodes in the tree has minimal weight.
+
+We maintain an array `minDist` where, if point i is not included in the current tree, `minDist[i]` is the minimal weight among all connections from point i to points in the current tree.
+
+The time complexity is `O(V^2)` because we need to compute the adjacent matrix (whose entry records the weight between two nodes).
+
+The algorithm is as follows
+
+```cpp
+// Given an nxn matrix weights, where weights[i][j]
+// is the weight between edge from i to j
+// If i and j are not connected, weights[i][j] = INT_MAX
+int costOfMST(vector<vector<int>> weights) {
+    int n = weights.size();
+    vector<int> minDist(n, INT_MAX);
+    vector<bool> isInTree(n, false);
+    
+    // This will make the first iteration of loop to choose node 0
+    minDist[0] = 0;
+
+    for (int i = 0; i < n; i++) {
+        // 1. Find point w/ minimal distance
+
+        // Exclude nodes already in tree
+        if (isInTree[j]) {
+            continue;
+        }
+        int minIdx = -1;
+        int minVal = INT_MAX;
+        if (minDist[i] < minVal) {
+            minIdx = i;
+            minVal = minDist[i];
+        }
+
+        // 2. Add that point to tree
+        isInTree[i] = true;
+
+        // 3. Update minDist for neighboring points
+        for (int i = 0; i < n; i++) {
+            if (isInTree[i]) {
+                continue;
+            }
+            if (weights[i][minIdx] < minDist[i]) {
+                minDist[i] = weights[i][minIdx];
+            }
+        }
+    }
+
+    int result = accumulate(minDist.begin(), minDist.end(), 0);
+
+    return cost;
+}
+```
+
+### Min Spanning Tree, Prim w/ Min heap.
+
+If the graph is sparse (i.e. number of edge is low), we can replace adjacent matrix with a min heap of node, ordered by distance to MST.
+
+0. Push node 0 to min heap
+
+1. Pop heap until heap top has a node p not in tree, add p to the tree
+
+2. Push all neighboring node of p to heap, ordered by the weight of their connection to p.
+
+The time complexity is `O(ElogE)`. If the graph is complete (all pairs of nodes are directly connected), E is `O(n^2)` and this algorithm has poorer time complexity comapred to the adjacent matrix-based one above. It works best if the graph is sparse.
+
+### Minimal Spanning Tree, Kruskal
+
+Idea: **Greedly rebuild the MST by adding edges with smallest weight that won't create a cycle**.
+
+0. Walk over all edges, and maintain a min-heap of edge ordered by weight.
+
+1. Start by picking the edge with smallest weight.
+
+2. For each top edge on heap
+
+  - if adding it to graph create cycle, pop it
+
+  - if not, add it to the tree
+
+To tell if adding an edge to graph will create cycle, we use union-find set: we check if two endpoints of an edge are in the same set. If so, adding this edge will create a cycle.
+
+Time Complexity: `O(ElogE)`, best for sparse graph.
 
 ## Topological Sorting
 
@@ -573,6 +685,8 @@ or
 2. 将节点从图中移除（将与该节点相连的其他节点的入度减一），在移除的图中找入度为0的节点
 
 如果存在环，那么环里的节点入度肯定大于0，这会导致我们无法移除所有节点。那么在循环退出时判断一下移除节点的数量，就可以知道图中是否存在环。
+
+实现算法时，我们在第2步中不需要真的移除节点，只需要维护一个记录每个节点入度的数组，并在移除某个节点时将其邻居节点的入度减一。
 
 算法如下
 
@@ -619,3 +733,15 @@ if (result.size() < n) {
 ### [207. Course Schedule](https://leetcode.com/problems/course-schedule/description/)
 
 ### [210. Course Schedule II](https://leetcode.com/problems/course-schedule-ii/description/)
+
+## Shortest Path
+
+### Dijkstra
+
+### Dijkstra w/ heap
+
+### Bellman ford
+
+### Floyd
+
+### A\*
