@@ -65,7 +65,7 @@ expiryDate = ["expiryDate"]
 [taxonomies]
   tag = "tags"
   # Categories are disabled by default.
-  # category = "categories"
+  category = "categories"
 
 # Enable to get proper Mathjax support
 [markup]
@@ -146,17 +146,21 @@ expiryDate = ["expiryDate"]
     weight = 1
 
   [[menu.main]]
-    name = "Tags"
-    url = "tags/"
+    name = "Learning Notes"
+    url = "posts/learning-notes"
     weight = 2
 
   [[menu.main]]
     name = "Grinding"
-    url = "tags/grinding"
-    weight = 10
+    url = "posts/grinding"
+    weight = 3
+
+  # [[menu.main]]
+  #   name = "Tags"
+  #   url = "tags/"
+  #   weight = 10
 
   [[menu.main]]
     name = "About"
     url = "about/"
     weight = 20
-  
