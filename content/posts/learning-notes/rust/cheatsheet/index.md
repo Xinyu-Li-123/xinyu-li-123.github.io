@@ -5,7 +5,7 @@ title: 'Rust Cheatsheet'
 mathjax: true
 ---
 
-One-page cheatsheet to refresh my memory on Rust. Reading note of the *The Rust Programming Language*.
+One-page cheatsheet to refresh my memory on Rust. Many examples are copied from [Rust by Example](https://doc.rust-lang.org/rust-by-example/).
 
 
 ## Cargo
@@ -36,20 +36,10 @@ cargo tree                  # show dependency tree
 cargo clean                 # remove `target/` directory
 ```
 
-## Ownership (ch4)
+## Ownership & Scoping Rules
 
-## Structs (ch5)
+## Structs
 
-## Enum and Pattern Matching (ch6)
+## Enum
 
-## Packages, Crates, and Modules (ch7)
-
-## Common Collections (ch8)
-
-## Error Handling (ch9)
-
-## Generic Types, Traits, and Lifetimes (ch10)
-
-## Tests (ch11)
-
-## Closures and Iterators (ch13)
+## Trait
