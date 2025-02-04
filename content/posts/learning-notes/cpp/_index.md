@@ -1,3 +1,3 @@
 ---
-title: "CPP Learning Notes"
+title: "CPP Learning Notes/"
 ---

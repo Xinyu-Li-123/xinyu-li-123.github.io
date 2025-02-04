@@ -1,3 +1,3 @@
 ---
-title: "Go Learning Notes"
+title: "Go Learning Notes/"
 ---

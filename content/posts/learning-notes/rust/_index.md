@@ -1,3 +1,3 @@
 ---
-title: "Rust Learning Notes"
+title: "Rust Learning Notes/"
 ---

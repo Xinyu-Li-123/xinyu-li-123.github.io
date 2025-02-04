@@ -1,3 +1,3 @@
 ---
-title: Leetcode 
+title: Leetcode/
 ---
