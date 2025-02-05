@@ -467,6 +467,79 @@ public:
 }
 ```
 
+### [542. 01 Matrix](https://leetcode.com/problems/01-matrix/description/)
+
+给定一个01矩阵，求每个格子到最近的0的距离（需要走几步能到0）。
+
+思路是bfs，把0想象成水，把1想象成海绵，算法的思路就是让水一步步向海面深处渗透。
+
+换句话说，我们的遍历顺序是
+
+- 所有0 (水)
+
+- 所有和0距离为1的格子（水向距离为1的海绵格子渗透）
+
+- 所有和0距离为2的格子（通过距离为1的海绵，水向距离为2的海绵格子渗透）
+
+- ...
+
+这就又回到了如何在bfs时特殊处理每一层的问题了。我们在遍历的过程中，记录层数，层数就是当前格子到0的距离。
+
+算法实现上，可以使用[另一篇文章](https://xinyu-li-123.github.io/en/posts/grinding/leetcode/tips/#%E9%81%8D%E5%8E%86%E4%B8%80%E6%A0%BC%E7%9A%84%E4%B8%8A%E4%B8%8B%E5%B7%A6%E5%8F%B3%E6%A0%BC%E5%AD%90)里提到的在格子中遍历上下左右邻居的方法。
+
+算法如下
+
+```cpp
+vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+    // a m x n matrix
+    int m = mat.size();
+    int n = mat[0].size();
+
+    vector<vector<int>> dist(m, vector<int>(n, 0));
+    vector<vector<bool>> visited(m, vector<bool>(n, false));
+    queue<pair<int, int>> que;
+
+    // push all 0 on queue
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (mat[i][j] != 0) {
+                continue;
+            }
+            visited[i][j] = true;
+            que.emplace(i, j);
+        }
+    }
+
+    // iterate over each layer
+    int curDist = 0;
+    while (!que.empty()) {
+        int numCell = que.size();
+        for (int q = 0; q < numCell; q++) {
+            auto [i, j] = que.front();
+            que.pop();
+            // push all unvisited neighbors on queue
+            for (int p = 0; p < 4; p++) {
+                int dx = dxs[p];
+                int dy = dys[p];
+                if (i + dx < 0 || i + dx >= m) { continue; }
+                if (j + dy < 0 || j + dy >= n) { continue; }
+                if (visited[i + dx][j + dy]) { continue; }
+                que.emplace(i + dx, j + dy);
+            }
+            // record distance of current node if it's unvisited
+            if (visited[i][j]) {
+                continue;
+            }
+            visited[i][j] = true;
+            dist[i][j] = curDist;
+        }
+        curDist++;
+    }
+
+    return dist;
+}
+```
+
 ## Union-Find Set
 
 并查集适用于判断**无向图的连通性**，既判断无向图中两个节点是否相连。

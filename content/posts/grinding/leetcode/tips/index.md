@@ -63,6 +63,16 @@ cout << ans << endl;
 cout << max({10, 20, 30}) << endl;
 ```
 
+## 最大的int / unsigned int / ...
+
+```cpp
+#include <climits>
+
+INT_MAX;
+// or 
+numeric_limits<int>::max();
+```
+
 ## Vector常用操作
 
 ```cpp
