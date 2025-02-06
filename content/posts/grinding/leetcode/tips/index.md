@@ -63,6 +63,21 @@ cout << ans << endl;
 cout << max({10, 20, 30}) << endl;
 ```
 
+## How to sort a container
+
+```cpp
+// more includes
+#include <algorithm>
+
+vector<int> vec = { -5, 3, 8, -1, 9 };
+
+// Sort vec ascendingly by the absolute value of elements
+sort(vec.begin(), vec.end(), [](int a, int b) {
+    return abs(a) < abs(b)
+})
+
+```
+
 ## 最大的int / unsigned int / ...
 
 ```cpp

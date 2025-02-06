@@ -6,7 +6,104 @@ mathjax: true
 tags: ['Grinding', 'LeetCode']
 ---
 
-## 快慢指针
+## 哈希表
+
+### [15. 3Sum](https://leetcode.com/problems/3sum/description/)
+
+题目：给定一个数组，寻找所有和为0的三元组，要求任意两个三元组不能含有完全相同的数字，例如`[1, 1, 2]`和`[1, 2, 1]`只能取一个。
+
+从2sum类推，我们可以先预先计算两元组之和，并构造`和 -> [两元组, 两元组, ...]`的哈希表，预先记录和为特定值的所有二元组。然后遍历所有数`n`，在哈希表中寻找和为`-n`的二元组，以此构造三元组。
+
+为了防止重复记录，我们采用以下设计
+
+- 对数组排序，在遍历时跳过重复的数字
+
+    排序后，重复的数字一定相连
+
+- 要求三元组的顺序必须符合排序后的数组顺序
+
+算法如下：
+
+```cpp
+vector<vector<int>> threeSum(vector<int>& nums) {
+    // To avoid duplicate, we enforce each triplet to be ordered
+    // and skip over duplicated elements when calculating.
+    
+    // sum => list of ordered pair with sum
+    unordered_map<int, vector<pair<int, int>>> mem;
+    vector<vector<int>> results; 
+
+    sort(nums.begin(), nums.end());
+
+    int n = nums.size();
+    int i = 0;
+    int j;
+
+    // map sum to list of pairs
+    int curi, curj;
+    while (i < n) {
+        curi = nums[i];
+        int j = i+1;
+        while (j < n) {
+            curj = nums[j];
+            // add pair to mem
+            int sum = curi + curj;
+            if (mem.find(sum) == mem.end()) {
+                mem[sum] = vector<pair<int, int>>{};
+            }
+            mem[sum].emplace_back(i, j);
+            // skip j over dup elem
+            while (j+1 < n && nums[j+1] == nums[j]) {
+                j++;
+            }
+            j++;
+        }
+        // skip i over dup elem
+        while (i+1 < n && nums[i+1] == nums[i]) {
+            i++;
+        }
+        i++;
+    }
+
+    // find num equal to negative sum
+    int k = 0;
+    while (k < n) {
+        // skip k over dup elem. Need to do this first, o/w we will select same index as i and skip all the duplicate.
+        // think about [1,1,1,1,1,1]. targetSum=3, pairSum=2, i=0, j=1.
+        // if we start k = 0, we will skip all 1's.
+        // instead, we start k at the last one of the duplicated elements
+        while (k+1 < n && nums[k+1] == nums[k]) {
+            k++;
+        }
+        int curk = nums[k];
+        if (mem.find(-curk) != mem.end()) {
+            for (auto [i, j] : mem[-curk]) {
+                if (k <= j) {
+                    continue;
+                }
+                int curi = nums[i];
+                int curj = nums[j];
+                results.push_back(vector<int>{curi, curj, curk});
+            }
+        }    
+        k++;
+    }
+
+    return results;
+}
+```
+
+## 双指针 / 快慢指针
+
+### 图中找环
+
+### [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/)
+
+双指针，start指向子字符串的首，end指向子字符串的尾。end向前迭代，过程中在一个集合里记录见过的所有字母
+
+- 如果无重复，end++
+
+- 如果有重复，start++，过程中把start经过的字母移出集合，直到集合中不再有当前字母。
 
 ## KMP
 
