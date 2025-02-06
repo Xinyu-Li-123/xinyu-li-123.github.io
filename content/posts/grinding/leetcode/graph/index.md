@@ -540,6 +540,12 @@ vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
 }
 ```
 
+### [133. Clone Graph](https://leetcode.com/problems/clone-graph/description/)
+
+给定一张连通无向图，和一个图中的节点R，深拷贝（deep copy）这张图，并返回拷贝的图中对应节点R的节点。图中每个节点的`val`都是唯一的。
+
+思路是dfs，从R开始dfs，过程中记录拷贝过的节点的`val`和地址。如果dfs过程中遇到拷贝过的节点，直接使用其地址;否则创建一个新的节点。
+
 ## Union-Find Set
 
 并查集适用于判断**无向图的连通性**，既判断无向图中两个节点是否相连。
