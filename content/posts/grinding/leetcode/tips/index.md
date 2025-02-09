@@ -112,6 +112,21 @@ arr.emplace_back(34);
 arr.pop_back();
 ```
 
+## String to Number
+
+```cpp
+#include <string>
+
+// to integer
+stoi("123");
+// to long
+stol("123");
+// to unsigned long
+stoul("123");
+// to double
+stof("1.234");
+```
+
 ## Misc
 
 ### Define a 2d array using vector
