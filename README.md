@@ -2,6 +2,8 @@ This is the github repo for my blog website. It's built with [Hugo](https://gohu
 
 ## Todo
 
+- [ ] For each "folder", list the most recent 3 posts in that folder.
+
 - [ ] Provide options to fold all code blocks in front matter
 
     This is because some of the leetcode note contains long codes, making it hard to read.
