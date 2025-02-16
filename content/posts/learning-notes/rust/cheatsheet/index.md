@@ -186,3 +186,20 @@ let your_order = Order {
     ..order_template_1
 };
 ```
+
+## `while let` and nested pattern matching
+
+```rust
+let myvec = vec![100, 100, 100, 100]
+while let Some(Some(integer)) = myvec.pop() {
+    assert_eq!(integer, 100);
+}
+```
+
+WTF?
+
+- `while let` will keep iterating until `None` is encountered;
+
+- `Vec::pop` will return `Some(T)` if vector contains elements, or `None` if vector is empty.
+
+- `Vec::pop` returns `Some(T)`, so we need another pattern matching, thus the `Some(Some(integer))`.
