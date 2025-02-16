@@ -79,7 +79,24 @@ cargo tree                  # show dependency tree
 cargo clean                 # remove `target/` directory
 ```
 
-## Rust By Example, but in one post.
+## Hashmap shenanigan
+
+### Insert if not exists
+
+```rust
+let name2grade: HashMap<&str, Option<u8>> = HashMap::new();
+name2grade.entry("Tom").or_insert(None);
+```
+
+### Insert default value if not exists
+
+```rust
+let name2grade: HashMap<&str, Option<u8>> = HashMap::new();
+// default of Option<T> is None
+name2grade.entry("Tom").or_default();
+```
+
+## Misc
 
 ### Create a slice
 
