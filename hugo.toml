@@ -29,7 +29,7 @@ theme = "hermit-v2"
 languageCode = "en-us"
 
 title = "Xinyu Li's Blog"
-# enableGitInfo = true
+enableGitInfo = true
 
 pygmentsCodefences  = true
 pygmentsUseClasses  = true
@@ -88,7 +88,7 @@ expiryDate = ["expiryDate"]
 
 [params]
   dateform        = "Jan 2, 2006"
-  dateformShort   = "Jan 2"
+  dateformShort   = "Jan 2, 2006"
   dateformNum     = "2006-01-02"
   dateformNumTime = "2006-01-02 15:04 -0700"
 
@@ -118,8 +118,11 @@ expiryDate = ["expiryDate"]
   # googleTagManager = "GTM-XXXXXXXX"
   # tagSymbol = "#"
   # categorySymbol = "⊲"
-  # pinned = "Pinned Posts"
-  # pinnedSVGname = "pin"
+  pinned = "Pinned Posts"
+  pinnedSVGname = "pin"
+  displayRecent = true
+  recentTitle = "Recent Posts"
+  recentCount = 3
   # descriptionInPosts= true
   # initialPublish = "Initally Posted on: "
   # human = ["single","posts"]

@@ -1,3 +1,4 @@
 ---
 title: Leetcode/
+disableRecent: true
 ---
