@@ -81,6 +81,8 @@ cargo clean                 # remove `target/` directory
 
 ## Ownership
 
+## Lifetime
+
 ## Trait
 
 ### Default implementation 
@@ -93,13 +95,13 @@ trait Licensed {
 }
 ```
 
-### Represent "any type that implement some trait"
+### `impl`, `Box`, and representing "any type that implement some trait"
 
 Rust enforces that size of type must be known at compile time. This is why you almost never see `str` used directly, b/c it's a variable length string. Instead, the fixed-size `&str` reference is used.
 
 The implication of this rule on function call is as follows:
 
-To represent "any type that implements some trait"
+To represent "any type that implements some trait",
 
 - for function argument, we can use `impl Trait`. 
 
@@ -119,11 +121,84 @@ trait Roll {
 trait Animal {}
 
 fn random_animal(dice: impl Roll) -> Box<dyn Animal> {
-    if dice.roll() < 0.5 {
+    if dice.roll() < 3 {
         Box::new(Sheep {})
     } else {
         Box::new(Cow {})
     }
+}
+```
+
+#### More about `impl`
+
+When `impl` appears to the left of `->` function signature, it is equivalent to a generic parameter with a bound, like this 
+
+```rust
+fn random_animal(dice: impl Roll) -> Box<dyn Animal> {}
+fn random_animal<T: Roll>(dice: T) -> Box<dyn Animal> {}
+```
+
+`impl` can also be used to the right of `->` as a returned type. We sometimes prefer this over returning a concrete type b/c we don't want to define a named type and only want the caller to know the returned type implement some trait. For example,
+
+```rust
+trait Animal {
+    fn description() -> String {
+        format!("This is an animal")
+    }
+}
+
+struct Dog;
+impl Animal for Dog;
+
+struct Cat;
+impl Animal for Cat;
+
+fn get_fav_animal() -> impl Animal {
+    // Today my fav animal is Dog
+    Dog
+    // Maybe tomorrow my fav animal is Cat
+    // Cat
+}
+
+fn main() {
+    let animal = get_fav_animal();
+    println!("Fav animal: {}", anima.description());
+}
+```
+
+For the above def of `get_fav_animal`, the concrete type of `impl Animal` is inferred from the function's definition. 
+
+The benefit of returning an `impl Animal` instead of `Dog` is that the caller only need to know *the returned type implements `Animal` trait*. When we change the implementation of `get_fav_animal()`, the caller doesn't need to change how they use the returned value of `get_fav_animal()`, because they always use it as some type that implements `Animal`.
+
+Also, there is no way to write an equivalent signature using generics if `impl` appears in function return type.
+
+```rust
+// This is incorrect
+fn get_val_animal<T: Animal> -> T {
+    Dog
+}
+```
+
+This is incorrect because `T` is provided by the caller, while the concrete type of `impl Animal` is determined by function definition.
+
+### Trait Bound
+
+We can require a generic type to implement some traits. This is called "trait bound".
+
+```rust
+struct Message<T: Display>(T);
+
+fn print_stuff_1<T: Display>(stuff: T) -> i32 {
+    println!("#### {} ####", stuff);
+    42
+}
+
+// equivalent to print_stuff_1
+fn print_stuff_2<T>(stuff: T) -> i32 
+where T: Display
+{
+    println!("#### {} ####", stuff);
+    42
 }
 ```
 
@@ -143,6 +218,135 @@ let name2grade: HashMap<&str, Option<u8>> = HashMap::new();
 // default of Option<T> is None
 name2grade.entry("Tom").or_default();
 ```
+
+## testing
+
+`assert!(is_even(3))`
+
+`assert_eq(triple(3), 9)`
+
+A test that should panic
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn zero_div() {
+        // 3/0 is invalid
+        let res = div(3, 0);
+    }
+}
+```
+
+## iterator 
+
+### Commonly used chain of iter methods
+
+Filter + Count
+
+```rust
+// a Grade struct representing both numerical score and letter grade
+pub struct Grade {
+    pub score: f64,
+    pub letter: String,
+}
+
+pub fn count_letter_grade(grades: &[Grade], letter: &str) -> usize {
+    grades.iter().filter(|&grade| grade.letter == letter).count()
+}
+
+pub fn count_score_range(grades: &[Grade], score_range: std::ops::Range<f64>) -> usize {
+    grades.iter().filter(|&grade| score_range.contains(&grade.score)).count()
+}
+```
+
+Map 
+
+Sum 
+
+Map from `Result<T, E>` to `Result<T, F>`
+
+### Collecting an `impl Iterator<Item = Result<T, E>>`
+
+Given an `impl Iterator<Item = Result<T, E>>`, for example `let res = vec![3, 4, 1, 2].iter().map(|v| checked_sub_1(v, v-1))`, `res.collect()` can return two types: 
+
+- `Result<Vec<i32>, Error>`: a result that contains either a vector of `i32` or an error
+
+- `Vec<Result<i32, Error>>`: a vector of results that contains either `i32 or error
+
+A full example is below
+
+```rust
+use std::fmt::Display;
+
+#[derive(PartialEq, Debug)]
+pub enum CheckError {
+    UnderflowError(i32)
+}
+
+pub fn checked_sub_1(val: &i32) -> Result<i32, CheckError> {
+    match val {
+        ..1 => Err(CheckError::UnderflowError(*val)),
+        _ => Ok(val - 1)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn fn1() -> Result<Vec<i32>, CheckError> {
+        let values: Vec<i32> = vec![3,2,1,0];
+        values
+            .iter()
+            .map(checked_sub_1)
+            .collect()
+    }
+
+    #[test]
+    fn test_error_1() {
+        assert_eq!(fn1(), Err(CheckError::UnderflowError(0)));
+    }
+    
+    fn fn2() -> Vec<Result<i32, CheckError>> {
+        let values: Vec<i32> = vec![3,2,1,0];
+        values
+            .iter()
+            .map(checked_sub_1)
+            .collect()
+    }
+
+    #[test]
+    fn test_error_2() {
+        assert_eq!(fn2(), [Ok(2), Ok(1), Ok(0), Err(CheckError::UnderflowError(0))]);
+    }
+}
+```
+
+This is because `collect()` returns a type that implements `FromIterator<Self::Item>`, statically dispatched. The signature of `collect` is below
+
+```rust
+pub trait Iterator {
+    fn collect<B: FromIterator<Self::Item>>(self) -> B
+    where
+        Self: Sized;
+}
+```
+
+Here, `Item = Result<i32, CheckError>`. Furthermore, both `Vec<T>` and `Result<T, E>` implements `FromIterator` trait. Thus, `collect()` can return both types using their `FromIterator` implementation respectively.
+
+- `collect(self) -> Vec<Result<i32, CheckError>>`
+
+    This one is quite straight forward. Given an iterator of `T`, we return a `Vec<T>`. Here, `T = Result<i32, CheckError>`.
+
+- `collect(self) -> Result<Vec<i32>, CheckError>`
+
+    This one is more interesting. To return `Result<Vec<i32>, CheckError>`, we consumes values in iterator to build up the vector, and shortcircuit on the first error. That is, we either creates a vector for all values, or return the first error encountered.
+
+    One catch is that the values are consumed even if an error occur. When an error occur, all values before this error are consumed. For details, see this [Rust By Example page](https://doc.rust-lang.org/rust-by-example/error/iter_result.html)
 
 ## Misc
 
