@@ -79,6 +79,54 @@ cargo tree                  # show dependency tree
 cargo clean                 # remove `target/` directory
 ```
 
+## Ownership
+
+## Trait
+
+### Default implementation 
+
+```rust 
+trait Licensed {
+    fn licensing_info(&self) -> String {
+        "Default license".to_string()
+    }
+}
+```
+
+### Represent "any type that implement some trait"
+
+Rust enforces that size of type must be known at compile time. This is why you almost never see `str` used directly, b/c it's a variable length string. Instead, the fixed-size `&str` reference is used.
+
+The implication of this rule on function call is as follows:
+
+To represent "any type that implements some trait"
+
+- for function argument, we can use `impl Trait`. 
+
+    This is called **static dispatch**. Rust will determine the concrete type of parameter at each function call, i.e. Rust will monomorphize each function call.
+
+- for function return value, we must use `Box<dyn Trait>`.
+
+    This is called **dynamic dispatch**. Instead of concrete type, we return a pointer to value of that type. The pointer size is known at compile time, and the actual type is stored on heap.
+
+Below is an example showing how dispatch works differently for function parameter and return value.
+
+```rust
+trait Roll {
+    fn roll() -> u8;
+}
+
+trait Animal {}
+
+fn random_animal(dice: impl Roll) -> Box<dyn Animal> {
+    if dice.roll() < 0.5 {
+        Box::new(Sheep {})
+    } else {
+        Box::new(Cow {})
+    }
+}
+```
+
 ## Hashmap shenanigan
 
 ### Insert if not exists
