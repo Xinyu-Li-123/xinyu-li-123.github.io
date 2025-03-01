@@ -105,6 +105,118 @@ To chain multiple commands, we can
 upload_image.py {mountain,sea}.{png,jpg}
 ```
 
+### Managing an AppImage on Ubuntu + GNOME
+
+#### What is AppImage
+
+An AppImage to Linux is what exe is to Windows. It allows you to run an application on all common Linux distributions by simply executing an `myapp.AppImage` file. All you needs are
+
+```bash
+$ chmod a+x myapp.AppImage
+$ ./myapp.AppImage
+```
+
+AppImage features
+
+- no installation: just download and run
+
+- self-contained: includes all dependencies
+
+- Doesn't modify the system: everything needed is in the AppImage, and it can be runned without `sudo`
+
+- Portable: just one file
+
+However, there are some tradeoff
+
+- no shared dependencies: this is not necessarily a bad thing. but it is a tradeoff.
+
+- no automatic update: you must manually download the new versions and replace it. Some AppImage supports `appimageupdate` though.
+
+- need to manually integrate into the system: this is just unavoidable for a portable format like AppImage.
+
+#### Install an AppImage
+
+Sure, you can just execute the AppImage like any other program, but what if I want to use it as if it was installed by a package manager?
+
+We use [Krita](https://krita.org/en/) as an example. Krita is a professional free and open source painting program, free alternative to Photoshop, SAI, or CSP.
+
+1. Download the AppImage
+
+    ```bash
+    # download to a file named krita.AppImage
+    wget --output-document krita.AppImage https://download.kde.org/stable/krita/5.2.9/krita-5.2.9-x86_64.AppImage
+    ```
+
+2. Place the AppImage in `~/Application/krita/`, and make it executable
+
+    ```bash
+    mkdir ~/Application/krita
+    mv krita.AppImage ~/Application/krita/
+    cd ~/Application/krita
+    chmod +x krita.AppImage
+    ```
+
+3. Extract the app icon from the AppImage, so that we can create a desktop entry for it later.
+
+    This can be done in several ways. One way I find convenient is to first mount the AppImage somewhere in `/tmp` folder, then copy the icon.
+
+    ```bash
+    # this will mount krita to /tmp/.mount_kritaXXXXX
+    ./krita.AppImage --appimage-mount
+
+    # the command above will block the current bash shell
+    # so open another shell to run this
+    cp /tmp/.mount_kritaXXXXX/krita.png .
+    ```
+
+    The exact path to icon in the AppImage may differ for diff apps, but the logic is the same.
+
+4. Create a desktop file, so that it's accessible in the application menu
+
+    Create a desktop file
+
+    ```bash
+    touch ~/.local/share/applications/krita.desktop
+    ```
+
+    Add the following to the file
+
+    ```ini
+    [Desktop Entry]
+    Name=MyApp
+    Exec=/home/<username>/Applications/krita/krita.AppImage
+    Icon=/home/<username>/Applications/krita/krita.png
+    Type=Application
+    Categories=Utility;
+    ```
+
+    Update the GNOME's application database
+
+    ```bash
+    update-desktop-database ~/.local/share/applications/
+    ```
+
+Now, you should be able to see the Krita icon in the GNOME application menu!
+
+#### Update and Delete an AppImage
+
+To update the AppImage, simply replace the AppImage file with the newer version one
+
+```bash
+cd ~/Applications/krita
+rm krita.AppImage
+wget --outut-document krita.AppImage "<link to AppImage of newer version>"
+# don't forget to make the new AppImage exectuable
+chmod +x krita.AppImage
+```
+
+To delete an AppImage, simply remove the entire app folder and the desktop entry
+```bash
+rm -rf ~/Applicatioins/krita
+rm ~/.local/share/applications/krita.desktop
+update-desktop-database ~/.local/share/applications/
+```
+
 ## Concepts
 
 <!-- 
