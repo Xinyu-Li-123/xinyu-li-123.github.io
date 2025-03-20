@@ -179,7 +179,7 @@ Note that `deref` returns a reference to type `Target`, instead of the actual `T
 
 ### Deref Coersion
 
-When type A implements `Deref` trait with `Target` type `B`, we can pass a variable of type `&A` to a function that takes `&B`, and Rust will automatically calls `A.deref()` to convert `A` to `&B`.
+When type A implements `Deref` trait with `Target` type `B`, we can pass a variable of type `&A` to a function that takes `&B`, and Rust will automatically calls `A.deref()` to convert `A` to `&B`. 
 
 ```rust
 // Deref coersion that convert type `A` to type `&B`
@@ -224,7 +224,9 @@ A -> &B
 Accepting a parameter of type &B.
 ```
 
-A useful example is that `String` implements `Deref` with `Target = str`, meaing we can pass `&String` to functions that takes `&str` as parameter. The implementation is actually quite short
+In other words, if `A` implements `Deref` with `Target=B`, Rust will find a way to do **implicit type conversion from `&A` to `&B`**. Logically, we can explicitly write out this implicit conversion as `&*(A.deref())`.
+
+A useful example is implicitly convert `&String` to `&str`. `String` implements `Deref` with `Target = str`, meaing we can pass `&String` to functions that takes `&str` as parameter. The implementation is actually quite short
 
 ```rust
 #[stable(feature = "rust1", since = "1.0.0")]
@@ -238,7 +240,7 @@ impl ops::Deref for String {
 }
 ```
 
-You can even chain deref coersion together, like this 
+To take one step further, you can even chain deref coersion together, like this 
 
 ```rust
 
@@ -356,7 +358,7 @@ pub fn drop<T>(_x: T) {}
 
 It moves the argument into the function, thus the argument is automatically dropped before the function returns.
 
-As a result of this implementation, passing in any argument that implements `Copy` trait, such as `i32`, will take no effect, since the argument will be copied into the `std::mem::drop` function.
+A slightly unexpected result of this implementation is that passing in any argument that implements `Copy` trait, such as `i32`, will take no effect. This is because the argument will be copied into the `std::mem::drop` function.
 
 ## Reference-counting Pointer `Rc<T>`
 
@@ -366,9 +368,9 @@ The typical usage of `Rc<T>` is to
 
 - create a value on stack
 
-- create the first `Rc<T>` using `Rc::new()`. This will initialize a `Rc<T>` by copying the value to heap.
+- create the first `Rc<T>` using `Rc::new()`. This will **initialize a `Rc<T>` by copying the value to heap**.
 
-- create more `Rc<T>` using `Rc::clone()`. These `Rc<T>` will refer to the same value allocated on heap.
+- create more `Rc<T>` using `Rc::clone()`. These `Rc<T>` will **refer to the same value allocated on heap**.
 
 ```rust
 use std::rc::Rc;
@@ -399,7 +401,7 @@ Rc::strong_count(&a);
 
 `Rc<T>` provides multiple owning immutable reference to the heap value. Sometimes, we want have multiple owning mutable reference. For example, in a DAG, we can write our code s.t. a node is owned by all its neighbors. It would be convenient to modify the node value as we traverse the graph. `RefCell<T>` provides this feature: we can define an immutable variable of type `RefCell<T>` that points to a value of type `T` on heap, and modify the value using `RefCell::borrow_mut()`. This pattern is called **Interior Mutability**: 
 
-- **Interior Mutability**: we hold an immutable reference of an abstraction of a value, and mutate the interior value through this immutable abstraction.
+- **Interior Mutability**: we hold an immutable reference of an abstraction of a value (`RefCell<T>`), and mutate the interior value (`T`) through this immutable abstraction.
 
 As an example, we can define a list where both the node value and next node pointer is interiorly mutable.
 
@@ -450,6 +452,18 @@ mod tests {
     }
 }
 ```
+
+Here, we have two usage of `RefCell`, mixed with `RC`. Let's see how they work
+
+- Node value: `Rc<RefCell<String>>`
+
+	`Rc` allows us to create multiple immutable reference to the underlying `RefCell<String>`, while `RefCell` allows each of these reference to modify the underlying `String`.
+
+	Note that the multiple reference can't modify `RefCell<String>`. They can only modify the `String` holded by `RefCell`.
+
+- Next node: `RefCell<Rc<List>>`
+
+	`RefCell` allows the current node to change the next node to point to. The next node itself can also be pointed by multiple nodes, thanks to `Rc`.
 
 ### Memory Leak and `Weak<T>`
 

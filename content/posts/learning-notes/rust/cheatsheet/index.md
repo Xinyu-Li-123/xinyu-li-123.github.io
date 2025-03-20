@@ -79,6 +79,28 @@ cargo tree                  # show dependency tree
 cargo clean                 # remove `target/` directory
 ```
 
+## testing
+
+`assert!(is_even(3))`
+
+`assert_eq(triple(3), 9)`
+
+A test that should panic
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn zero_div() {
+        // 3/0 is invalid
+        let res = div(3, 0);
+    }
+}
+```
+
 ## Ownership
 
 ## Lifetime
@@ -217,28 +239,6 @@ name2grade.entry("Tom").or_insert(None);
 let name2grade: HashMap<&str, Option<u8>> = HashMap::new();
 // default of Option<T> is None
 name2grade.entry("Tom").or_default();
-```
-
-## testing
-
-`assert!(is_even(3))`
-
-`assert_eq(triple(3), 9)`
-
-A test that should panic
-
-```rust
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[should_panic]
-    fn zero_div() {
-        // 3/0 is invalid
-        let res = div(3, 0);
-    }
-}
 ```
 
 ## iterator 
@@ -439,7 +439,7 @@ let your_order = Order {
 };
 ```
 
-## `while let` and nested pattern matching
+### `while let` and nested pattern matching
 
 ```rust
 let myvec = vec![100, 100, 100, 100]
@@ -455,3 +455,91 @@ WTF?
 - `Vec::pop` will return `Some(T)` if vector contains elements, or `None` if vector is empty.
 
 - `Vec::pop` returns `Some(T)`, so we need another pattern matching, thus the `Some(Some(integer))`.
+
+### Use Test to Structure Tutorial
+
+When reading a tutorial, you may want to write executable codes along with the tutorial. For example, when learning about smart pointer in the rust book, you may want to write code for Box, Drop&Deref, Rc, RefCell respectively. Test is a good way to do this. You can divide each feature into a file, and write executable tests within each file about each feature.
+
+For example, we could have the following folder structure
+
+```
+$ tree .
+.
+├── Cargo.lock
+├── Cargo.toml
+└── src
+    ├── main.rs
+    ├── tu_box.rs
+    └── tu_deref.rs
+```
+
+The file `tu_box.rs` showcase the usage of box
+
+```rust
+/// file: tu_box.rs
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn simple_box() {
+        let b = Box::new(5);
+        println!("b = {} ({:?})", b, b);
+    }
+}
+```
+
+and another file `tu_deref.rs`, where we define a struct with custom `Deref` trait implementation
+
+```rust
+/// file: tu_deref.rs
+use std::ops::Deref;
+
+struct MyStruct {
+    val: i32,
+}
+
+impl Deref for MyStruct {
+    type Target = i32;
+
+    fn deref(&self) -> &Self::Target {
+        &self.val
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn simple_deref() {
+        let val = 31;
+        let my_var = MyStruct { val };
+        println!("my_var.val = {}", *my_var.deref());
+        assert_eq!(val, *my_var);
+        assert_eq!(val, *my_var.deref());
+    }
+}
+```
+
+Just remember to declare these files as mod in `main.rs`.
+
+```rust
+/// file: main.rs
+mod tu_box;
+mod tu_deref;
+
+// main is not strictly necessary if we only need to run the test
+fn main() {
+    println!("Hello, world!");
+}
+```
+
+This way, we can call specific tests with 
+
+```bash
+// cargo test <test_function_name_keyword> -- --nocapture
+cargo test simple_box -- --nocapture
+cargo test deref -- --nocapture
+cargo test simple -- --nocapture
+```
+
+The `-- --nocapture` flag tell rustc to redirect the test output to stdout.
