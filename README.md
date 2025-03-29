@@ -2,6 +2,8 @@ This is the github repo for my blog website. It's built with [Hugo](https://gohu
 
 ## Todo
 
+- [ ] Allow certain index pages to be sorted by post name instead of date, for example, the reading note of a book where title is `Chapter <ID>. <CHAPTER_NAME>`.
+
 - [ ] Provide options to fold all code blocks in front matter
 
     This is because some of the leetcode note contains long codes, making it hard to read.
@@ -13,3 +15,4 @@ This is the github repo for my blog website. It's built with [Hugo](https://gohu
 ## Tips
 
 To create posts in VSCode, you can install the [Insert Date String](https://marketplace.visualstudio.com/items?itemName=jsynowiec.vscode-insertdatestring) extension, so that it's easier to fill in the `date` attribute in the front matter of the post.
+
