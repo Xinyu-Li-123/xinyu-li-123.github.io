@@ -13,7 +13,11 @@ In this post, we will build and run Java projects in command-line, with no relia
 
 To follow alone with the examples in this section, one should have JDK installed in their system, and have it accessible from command-line. If you don't know what that mean, you could refer to [this blog](https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-22-04#step-1-installing-java) that explains step-by-step how to setup Java. It's written for Ubuntu, but the process is almost the same for other OS.
 
-This post only discuss what JDK offers. Later posts will cover non-official (but useful) tools like Maven, JUnit, etc.
+Note that
+
+- This post only discuss what JDK offers. Later posts will cover non-official (but useful) tools like Maven, JUnit, etc.
+
+- This post won't cover language details such as "how to write a for loop", or "how to use ArrayList`.
 
 ## Single File, Single Class
 
