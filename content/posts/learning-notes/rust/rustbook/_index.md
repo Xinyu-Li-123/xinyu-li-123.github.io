@@ -1,6 +1,7 @@
 ---
 title: The Rust Programming Language/
-disableRecent: true
+displayRecent: false
+sortPostBy: "title"
 ---
 
 Source: [https://doc.rust-lang.org/book/](https://doc.rust-lang.org/book/)

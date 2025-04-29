@@ -120,9 +120,14 @@ expiryDate = ["expiryDate"]
   # categorySymbol = "⊲"
   pinned = "Pinned Posts"
   pinnedSVGname = "pin"
+
+  # toggle how recent posts within the folder is displayed
   displayRecent = true
   recentTitle = "Recent Posts"
   recentCount = 3
+
+  sortPostBy = "date"
+
   # descriptionInPosts= true
   # initialPublish = "Initally Posted on: "
   # human = ["single","posts"]
