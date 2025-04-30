@@ -1,4 +1,4 @@
-This is the github repo for my blog website. It's built with [Hugo](https://gohugo.io/). The theme is [hermit-v2](https://github.com/1bl4z3r/hermit-V2).
+This is the github repo for my blog website. It's built with [Hugo](https://gohugo.io/). The theme is a customized version of [Hermit-V2](https://github.com/1bl4z3r/hermit-V2), which is tracked in [this repo](https://github.com/Xinyu-Li-123/customized-hermit-V2/tree/main).
 
 ## Tips
 

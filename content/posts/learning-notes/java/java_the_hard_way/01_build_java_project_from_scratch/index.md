@@ -5,9 +5,11 @@ title: '01 Build Java Project from Scratch'
 mathjax: false
 ---
 
-<!-- TODO:
+TODO:
 
-- [ ] Add Java Bytecode pseudocode here and there -->
+- [ ] Add Java Bytecode pseudocode here and there
+
+- [ ] Add a section about resource
 
 In this post, we will build and run Java projects in command-line, with no reliance on an IDE. By diving into the nitty-gritty details, we would have a better understanding of what an IDE is doing behind the scene when you click that shiny "run" button.
 
@@ -635,7 +637,7 @@ This section is a collection of command-line tools that comes in handy when work
 
 - `javap`: Disassemble a `.class` file.
 
-    E.g. Given the java file 
+    E.g. Given the java file
 
     ```java
     // file: HelloWorld.java
@@ -657,3 +659,4 @@ This section is a collection of command-line tools that comes in handy when work
     public static void main(java.lang.String[]);
     }
     ```
+
