@@ -9,15 +9,13 @@ To manage a Java project, and to collaborate with others on a Java project, we n
 
 > Note: We assume the reader has already finished the [Maven in 5 minutes](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html) tutorial, which walks you through the usage of Maven without diving into how it works.
 
-## Maven Basic Concepts
+This post does not meant to be a detailed reference. Instead, it aims to explain what is going on under the hood in our daily usage of Maven. For example, what exactly happen when you run `mvn package`: what got executed, where is the execution logic stored, and where is that logic defined?
 
-This is a list of concepts in Maven. It's not meant to be a detailed reference. Instead, it aims to explain what is going on under the hood in our daily usage of Maven. For example, what exactly happen when you run `mvn package`: what got executed, where is the execution logic stored, and where is that logic defined? Hopefully, by the end of this section, things like `mvn package` will be less of a black box to you.
-
-### POM (Project Object Model)
+## POM (Project Object Model)
 
 A POM is an XML file that defines a Maven project's structure and build configuration.
 
-#### Artifact
+### Artifact
 
 An artifact is a packaged unit such as `.jar` or `.war`. In `pom.xml`, an artifact is uniquely identified by three consecutive tags in `pom.xml`: `groupId`, `artifactId`, and `version`, which is abbreviated as GAV.
 
@@ -56,7 +54,7 @@ We can also optionally append additional tags to GAV. Below is the full list of 
 
 - `optional`: TODO:
 
-#### Organization of Artifacts
+### Organization of Artifacts
 
 Artifacts (in specific, GAVs) are organized inside different tags based on their roles.
 
@@ -177,9 +175,9 @@ Artifacts (in specific, GAVs) are organized inside different tags based on their
   </project>
   ```
 
-### Lifecycle
+## Lifecycle
 
-#### Plugin and Goal
+### Plugin and Goal
 
 To understand what **lifecycle** is, we need to first understand what **plugin** and **goal** are.
 
@@ -255,7 +253,7 @@ There are two ways to execute a goal in a plugin
 
   We will discuss this in the next section.
 
-#### Lifecycle and Phase
+### Lifecycle and Phase
 
 A lifecycle is a sequence of phases. A phase consists of a label like `validate`, `compile`, `package`, and zero or more goals attached to it. To execute a phase is to execute all goals attached to the phase. When running a specific phase, Maven will execute all previous phases in order, and then execute the current phase.
 
@@ -287,7 +285,7 @@ And here is the binding between phases and goals in the default lifecycle:
 
 For some phases, Maven will attach goals to them automatically. For other phases, there will be no goal attached to it unless we explicity do so. We will talk about how to manually attach goal to phase in next section.
 
-#### Attach Custom Goal from Custom Plugin to a Phase
+### Attach Custom Goal from Custom Plugin to a Phase
 
 TODO: Finish this part by writing a custom plugin with a custom goal, and attach it to the phase of a custom project.
 
