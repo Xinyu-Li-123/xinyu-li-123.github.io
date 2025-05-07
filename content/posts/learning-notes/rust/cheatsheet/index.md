@@ -9,7 +9,7 @@ One-page cheatsheet to refresh my memory on Rust. Many examples are copied from 
 
 ## Tips for Learning Rust
 
-- Learn by fixing error: 
+- Learn by fixing error:
 
     [rustlings](https://github.com/rust-lang/rustlings) is a great example that adopts this method of learning by fixing error.
 
@@ -50,6 +50,14 @@ One-page cheatsheet to refresh my memory on Rust. Many examples are copied from 
     ```
 
 - Read the source code. Seems like many of them are more concise than I expected.
+
+## Naming Convention
+
+This is a list of naming conventions. It's not enforced by the Rust compiler but it's commonly adopted.
+
+- The `new()` method (`fn MyStruct::new(arg1: type1, ...) -> Self`) returns an instance of type `MyStruct`. `new()` is expected to never fail.
+
+- The `build()` method (`fn MyStruct::build(arg1: type1, ...) -> Result<Self, ...>`) builds an instance of type, and return `Result<MyStruct, ...>`. This function carries out some validation, and may fail if the validation fails. E.g. a nonexistent path to config file is provided.
 
 ## Cargo
 
@@ -107,9 +115,9 @@ mod tests {
 
 ## Trait
 
-### Default implementation 
+### Default implementation
 
-```rust 
+```rust
 trait Licensed {
     fn licensing_info(&self) -> String {
         "Default license".to_string()
@@ -125,13 +133,23 @@ The implication of this rule on function call is as follows:
 
 To represent "any type that implements some trait",
 
-- for function argument, we can use `impl Trait`. 
+- for function argument, we can use `impl Trait`.
 
     This is called **static dispatch**. Rust will determine the concrete type of parameter at each function call, i.e. Rust will monomorphize each function call.
 
 - for function return value, we must use `Box<dyn Trait>`.
 
     This is called **dynamic dispatch**. Instead of concrete type, we return a pointer to value of that type. The pointer size is known at compile time, and the actual type is stored on heap.
+
+    Technically, we can use `impl Trait` as the returned type if there is only one returned type, for example,
+
+    ```rust
+    fn static_types() -> impl Any {
+        4
+    }
+    ```
+
+    This could be useful when we want to hide implementation details, and only add restriction on the behavior of the returned type. However, to have true dynamic dispatch, we must use `Box<dyn Trait>`.
 
 Below is an example showing how dispatch works differently for function parameter and return value.
 
@@ -153,7 +171,7 @@ fn random_animal(dice: impl Roll) -> Box<dyn Animal> {
 
 #### More about `impl`
 
-When `impl` appears to the left of `->` function signature, it is equivalent to a generic parameter with a bound, like this 
+When `impl` appears to the left of `->` function signature, it is equivalent to a generic parameter with a bound, like this
 
 ```rust
 fn random_animal(dice: impl Roll) -> Box<dyn Animal> {}
@@ -188,7 +206,7 @@ fn main() {
 }
 ```
 
-For the above def of `get_fav_animal`, the concrete type of `impl Animal` is inferred from the function's definition. 
+For the above def of `get_fav_animal`, the concrete type of `impl Animal` is inferred from the function's definition.
 
 The benefit of returning an `impl Animal` instead of `Dog` is that the caller only need to know *the returned type implements `Animal` trait*. When we change the implementation of `get_fav_animal()`, the caller doesn't need to change how they use the returned value of `get_fav_animal()`, because they always use it as some type that implements `Animal`.
 
@@ -241,7 +259,7 @@ let name2grade: HashMap<&str, Option<u8>> = HashMap::new();
 name2grade.entry("Tom").or_default();
 ```
 
-## iterator 
+## iterator
 
 ### Commonly used chain of iter methods
 
@@ -263,15 +281,15 @@ pub fn count_score_range(grades: &[Grade], score_range: std::ops::Range<f64>) ->
 }
 ```
 
-Map 
+Map
 
-Sum 
+Sum
 
 Map from `Result<T, E>` to `Result<T, F>`
 
 ### Collecting an `impl Iterator<Item = Result<T, E>>`
 
-Given an `impl Iterator<Item = Result<T, E>>`, for example `let res = vec![3, 4, 1, 2].iter().map(|v| checked_sub_1(v, v-1))`, `res.collect()` can return two types: 
+Given an `impl Iterator<Item = Result<T, E>>`, for example `let res = vec![3, 4, 1, 2].iter().map(|v| checked_sub_1(v, v-1))`, `res.collect()` can return two types:
 
 - `Result<Vec<i32>, Error>`: a result that contains either a vector of `i32` or an error
 
@@ -377,11 +395,11 @@ When describing a function's parameter, we can use the word "mutability", and it
 
     commonly used, need to take ownership of input, i.e. move it inside the function
 
-- a mutable parameter of `MyStruct`, 
+- a mutable parameter of `MyStruct`,
 
     rarely used
 
-- an immutable parameter of mutable reference to `MyStruct`, 
+- an immutable parameter of mutable reference to `MyStruct`,
 
     commonly used, need to modify input
 
@@ -533,7 +551,7 @@ fn main() {
 }
 ```
 
-This way, we can call specific tests with 
+This way, we can call specific tests with
 
 ```bash
 // cargo test <test_function_name_keyword> -- --nocapture
@@ -543,3 +561,52 @@ cargo test simple -- --nocapture
 ```
 
 The `-- --nocapture` flag tell rustc to redirect the test output to stdout.
+
+### The `?` Operator
+
+TODO: Finish this section
+
+The `?` operator simplifies error handling. It's a unary postfix operator that can only be applied to `Result<T, E>` or `Option<T>`.
+
+- When applied to a value `res` of type `Result<T, E>`,
+
+  - if its `Ok(x)`, `res?` evaluates to `x`. For example,
+
+  - if its `Err(e)`, `res?` returns `Err(e)`.
+
+  As an example,
+
+  ```rust
+  fn try_to_parse() -> Result<i32, ParseIntError> {
+      let x: i32 = "123".parse()?; // x = 123
+      let y: i32 = "24a".parse()?; // returns an Err() immediately
+      Ok(x + y)                    // Doesn't run.
+  }
+
+  let res = try_to_parse();
+  println!("{:?}", res);
+  ```
+
+- When applied to a value `opt` of type `Option<T>`,
+
+  - if it's `Some(x)`, `res?` evaluates to `x`,
+
+  - if it's `None`, `res?` returns `None`
+
+  As an example,
+
+  ```rust
+  fn try_option_some() -> Option<u8> {
+      let val = Some(1)?;
+      Some(val)
+  }
+  assert_eq!(try_option_some(), Some(1));
+
+  fn try_option_none() -> Option<u8> {
+      let val = None?;
+      Some(val)
+  }
+  assert_eq!(try_option_none(), None); 
+  ```
+
+`?` operator allows us to chain results / options with minimal boilerplate code.
