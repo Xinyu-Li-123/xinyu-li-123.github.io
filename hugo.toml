@@ -76,7 +76,8 @@ expiryDate = ["expiryDate"]
        [markup.goldmark.extensions.passthrough.delimiters]
          block = [['\[', '\]'], ['$$', '$$']]
          inline = [['\(', '\)']]
-
+     [markup.goldmark.renderer]
+       unsafe = true
 [related]
   includeNewer = true
   threshold = 80
