@@ -33,7 +33,7 @@ enableGitInfo = true
 
 pygmentsCodefences  = true
 pygmentsUseClasses  = true
-#hasCJKLanguage = true
+hasCJKLanguage = true
 
 rssLimit = 10
 
@@ -115,7 +115,7 @@ expiryDate = ["expiryDate"]
   readTime = true
   # readTimeSeparator = "CHANGE ME READ TIME"
   # legacyLayout = false
-  shareSocial = true
+  shareSocial = false
   # googleTagManager = "GTM-XXXXXXXX"
   # tagSymbol = "#"
   # categorySymbol = "⊲"
