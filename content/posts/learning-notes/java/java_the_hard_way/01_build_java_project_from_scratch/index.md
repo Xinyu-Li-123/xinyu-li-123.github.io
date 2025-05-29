@@ -7,6 +7,8 @@ mathjax: false
 
 TODO:
 
+- [ ] Add content about module, and how to reduce jar size by using module
+
 - [ ] Add Java Bytecode pseudocode here and there
 
 - [ ] Add a section about resource
@@ -631,6 +633,10 @@ custom_library/
 
 The `MainApp.java` defines the class `MainApp` that locates at the package `com.example.myapp.MainApp`, and it would import from `com.mylib.service.Greeter` and `com.mylib.util.MathUtils`.
 
+## Module
+
+TODO:
+
 ## Misc
 
 This section is a collection of command-line tools that comes in handy when working with a Java project.
@@ -659,4 +665,3 @@ This section is a collection of command-line tools that comes in handy when work
     public static void main(java.lang.String[]);
     }
     ```
-

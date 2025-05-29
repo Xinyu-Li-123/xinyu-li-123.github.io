@@ -217,6 +217,18 @@ class Student extends Person {
 
 `class Student extends Person`表示`Student`类继承`Person`类。一个子类只能继承一个父类，Java只支持单继承。所有类的都有一个名为`Object`的父类。
 
+### 多继承与菱形问题
+
+不支持多继承是为了避免菱形问题。允许多继承的情况下，假如有父类A，类B和C继承A，类D又继承B和C。如果A有方法`run()`，B和C都可以覆写这一方法，编译器无法判断D应该继承谁的`run()`方法。
+
+```java
+  A
+ / \
+B   C
+ \ /
+  D
+```
+
 ### `protected`
 
 子类无法访问父类的`private`字段，但可以访问父类的`protected`字段。
@@ -388,6 +400,181 @@ class Person {
 
 ### `final`
 
-可使用`final`关键词，确保一个方法不会被覆写。
+`final`关键词用处很多
+
+- 用于方法，确保一个方法不会被覆写。
+
+- 用于类，确保一个类不能被继承
+
+- 用于字段，确保一个字段只能在声明或构造时被初始化一次，之后就再不能被修改
 
 ## 抽象类
+
+抽象类无法被实例化，仅用于被子类继承。
+
+抽象类可以包含抽象方法。抽象方法无法被实现，继承抽象类的子类必须覆写抽象方法。
+
+```java
+abstract class Person {
+  public String name;
+  public abstract void run();
+  public say_my_name() {
+    System.out.printf("My name is %s\n", this.name);
+  }
+}
+
+class Student extends Person {
+  public Student(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public void run() {
+    System.out.println("A student is running...");
+  }
+}
+
+class Employee extends Person {
+  public Employee(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public void run() {
+    System.out.println("An employee is running...");
+  }
+}
+```
+
+抽象类和其子类也可以向上转型，例如
+
+```java
+void everyone_run(Person[] persons) {
+  for (Person person : persons) {
+    person.run();
+  }
+}
+
+void main() {
+  Person[] persons = new Person[] {
+    new Student("Alice"),
+    new Employee("Bob"),
+  };
+  everyone_run(persons);
+}
+```
+
+可以发现，方法`everyone_run`只需要处理一个`Person`的数组，我们只需要知道处理的对象都有一个`run()`方法，而不需要关心具体是哪个子类继承了`Person`，以及`run()`是怎么被实现的。这一操作被称为面向抽象编程。其特征是
+
+- 上层代码只定义规范（例如 `abstract class Person`）；
+
+- 不需要子类就可以实现业务逻辑（正常编译）；
+
+- 具体的业务逻辑由不同的子类实现，调用者并不关心。
+
+## 接口
+
+现代编程会更倾向于数据与逻辑分离。抽象类混杂了字段、抽象方法、具体方法（有实现的方法），同时定义了数据与行为，不太好。
+
+对比抽象类，接口仅定义了一系列行为。
+
+```java
+interface Person {
+  void run();
+}
+
+interface Hello {
+  // 接口也可以定义抽象方法的默认实现，避免重复代码
+  default public hello() {
+    System.out.println("Hello!");
+  }
+}
+
+class Student implements Person {
+  public String name;
+
+  public Student(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public void run() {
+    System.out.println("A student is running...");
+  }
+}
+
+class Employee implements Person, Hello {
+  public String name;
+
+  public Employee(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public void run() {
+    System.out.println("An employee is running...");
+  }
+}
+```
+
+接口仅定义一系列抽象方法。接口可以给出抽象方法的具体实现
+
+接口也可以继承别的接口
+
+```java
+interface Creature {
+    void live();
+}
+
+interface Person extends Creature {
+    void run();
+    String getName();
+}
+```
+
+一个类可以实现多个接口。菱形问题不适用于实现多个接口的情况，因为接口不会给出方法的具体实现，只有实现接口的类才会给出具体实现。
+
+## 静态字段与静态方法
+
+我们可以在一个类中定义静态字段和静态方法，调用时通过类名调用。静态字段和静态方法常用于定义辅助方法，如`Array.sort()`，`Math.PI`。
+
+接口也可以定义静态字段（但没有静态方法）。接口的静态字段必须是`public static final`
+
+```java
+public interface Person {
+    public static final int MALE = 1;
+    public static final int FEMALE = 2;
+}
+```
+
+可以简写成
+
+```java
+public interface Person {
+    // 编译器会自动加上public static final:
+    int MALE = 1;
+    int FEMALE = 2;
+}
+```
+
+## 常用类
+
+### `String`和编码
+
+### `StringBuilder`和`StringJoiner`
+
+### 包装类型
+
+`Integer`包装`int`，使我们可以赋值`null`给一个“整数”。
+
+### JavaBean
+
+### `Enum`
+
+### `Record`
+
+### `BigInteger`
+
+### `BigDecimal`
+
+### 常用工具类
