@@ -1,12 +1,12 @@
 ---
 date: '2025-02-28T20:20:02-05:00'
 draft: false
-title: 'Bash Cheatsheet'
+title: 'Linux User Cheatsheet'
 ---
 
-For details, see the [bash reference manual](https://www.gnu.org/software/bash/manual/html_node/index.html)
+This is a cheatsheet for people who use Linux, specifically Ubuntu + Gnome, for their day-to-day OS: you write code, play games, or even draw on a Linux computer. This means, besides terminal stuff, we will also focus on better desktop usage.
 
-## Commonly Used Unix Utils 
+## Commonly Used Unix Utils
 
 ### File Compression / Decompression
 
@@ -29,25 +29,26 @@ tar czf output.tar.gz file1 folder2 file3 folder4 ...
 
 Extract a `.tar.gz` into the current directory
 
-```bash 
+```bash
 tar xvf output.tar.gz
 ```
 
 Extract a `.tar.gz` into a target directory
 
-```bash 
+```bash
 tar xvf output.tar.gz --directory target/
 ```
 
-List the content of a tar / tar.gz file 
+List the content of a tar / tar.gz file
 
-```bash 
+```bash
 # Lis[t] the contents of a tar [f]ile [v]erbosely:
 tar tvf output.tar.gz
 ```
 
-
 ## Commonly Used Bash Commands / Snippets / Tricks
+
+For details, see the [bash reference manual](https://www.gnu.org/software/bash/manual/html_node/index.html)
 
 ### Linter for Shell Scripts
 
@@ -112,8 +113,8 @@ upload_image.py {mountain,sea}.{png,jpg}
 An AppImage to Linux is what exe is to Windows. It allows you to run an application on all common Linux distributions by simply executing an `myapp.AppImage` file. All you needs are
 
 ```bash
-$ chmod a+x myapp.AppImage
-$ ./myapp.AppImage
+chmod a+x myapp.AppImage
+./myapp.AppImage
 ```
 
 AppImage features
@@ -211,6 +212,7 @@ chmod +x krita.AppImage
 ```
 
 To delete an AppImage, simply remove the entire app folder and the desktop entry
+
 ```bash
 rm -rf ~/Applicatioins/krita
 rm ~/.local/share/applications/krita.desktop
@@ -228,7 +230,7 @@ By default, **tracked files** and **staged chagnes** (added by `git add`) are st
 Below are commonly used commands related to stash
 
 - Normal stashing
-    
+
     ```bash
     git stash
     ```
@@ -251,7 +253,7 @@ Below are commonly used commands related to stash
     git stash list
     ```
 
-    This will print something like this 
+    This will print something like this
 
     ```
     stash@{0}: On main: second stash, including untracked files
@@ -313,8 +315,6 @@ Below are commonly used commands related to stash
     ```bash
     git stash --patch
     ```
-
-    
 
 ## Concepts
 
@@ -452,7 +452,7 @@ if condition; then
 fi
 ```
 
-The `condition` can be 
+The `condition` can be
 
 - a command, e.g. `./myprogram`, `true`
 
@@ -476,19 +476,19 @@ The `condition` can be
 
 - `$0`: Name of Script
 
-- `$1`-`$9`: Argument #1 to #9 to the script. 
+- `$1`-`$9`: Argument #1 to #9 to the script.
 
-- `$@`: All the arguments 
+- `$@`: All the arguments
 
-- `$#`: Number of arguments 
+- `$#`: Number of arguments
 
-- `$?`: Return code of the previous command 
+- `$?`: Return code of the previous command
 
-- `$$`: Process identification (PID) of the current script 
+- `$$`: Process identification (PID) of the current script
 
-- `!!`: Entire last command, including arguments. 
+- `!!`: Entire last command, including arguments.
 
-  Common usecase: if `vi secret_file.txt" failed due to missing permission, you can do `sudo !!` to execute the last command with sudo.
+  Common usecase: if `vi secret_file.txt" failed due to missing permission, you can do`sudo !!` to execute the last command with sudo.
 
 - `$_`: Last argument from the last command. Don't know why we need this...
 
