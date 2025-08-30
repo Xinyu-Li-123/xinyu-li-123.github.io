@@ -10,13 +10,17 @@ tags: ['Grinding', 'LeetCode']
 
 动态规划
 
-DP三问：
+DP五步：
 
-- 状态表示什么？
+- 状态表示什么（dp 数组含义）？
 
-- 状态如何转移？
+- 状态如何转移（递推公式）？
 
 - 初始状态是什么？
+
+- 确定遍历顺序。
+
+- 举例推导 dp 数组。
 
 动态规划可以分为以下几类（参考[这篇文章](https://leetcode.cn/circle/discuss/NfHhXD/)和[这篇文章](https://github.com/youngyangyang04/leetcode-master?tab=readme-ov-file#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92))
 
@@ -310,7 +314,32 @@ return {
 
 ### [72. Edit Distance](https://leetcode.com/problems/edit-distance/description/)
 
-TODO:
+`dp[i][j]`表示`word1[:i]`和`word2[:j]`的最小编辑距离，`0 <= i <= len(word1)`，`0 <= j <= len(word2)`
+
+基于递推的思路，我们只需要考虑三种可能的编辑方式：
+
+1. 删除`word1[i-1]`，然后编辑`word1[:i-1]`至`word2[:j]`
+
+2. 在`word1`末尾插入`word2[j-1]`，然后编辑`word1[:i]`至`word2[:j-1]`
+
+3. 编辑`word1[:i-1]`至`word2[:j-1]`，如有必要再将`word1[i-1]`替换为`word2[j-1]`
+
+由此可得状态转移方程
+
+```python
+dp[i][j] = min(
+    dp[i-1][j] + 1,
+    dp[i][j-1] + 1,
+    dp[i-1][j-1] + int(word1[i-1] != word2[j-1])
+)
+```
+
+初始化方式为
+
+```python
+dp[0][j] = j
+dp[i][0] = 0
+```
 
 ### [647. Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/description/)
 
