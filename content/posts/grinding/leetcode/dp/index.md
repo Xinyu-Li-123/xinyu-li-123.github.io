@@ -43,7 +43,6 @@ DP三问：
 ### 44. 通配符匹配
 ### 10. 正则表达式匹配 -->
 
-
 <!-- ### 516. 最长回文子序列
 ### 730. 统计不同回文子字符串
 ### 1039. 多边形三角剖分的最低得分
@@ -72,7 +71,7 @@ DP三问：
 
     则最大价值为只能选前`i-1`个物品，容量为`j`的背包所能装下的最大价值
 
-2. 放物品`i` 
+2. 放物品`i`
 
     则最大价值为`value[i]`加上选前`i-1`个物品，容量为`j-weight[i]`的背包所能装下的最大价值
 
@@ -84,7 +83,7 @@ dp[i][j] = max(dp[i-1][j], dp[i-1][j-weight[i]] + value[i]])
 
 对应的核心代码为
 
-```cpp 
+```cpp
 // We declare a 2d array of size (n+1, W) for convenience
 for (int i = 0; i < n; i++) {
     for (int j = W - weight[i]; j < W; j++) {
@@ -138,6 +137,7 @@ we can combine 1 and 1 to get 0, so the array converts to [1], then that's the o
 ```
 
 可以表示成
+
 ```
 Given [2, 7, 4, 1, 8, 1]
 4 - 2 => [(4-2), 7, 1, 8, 1]
@@ -310,21 +310,21 @@ return {
 
 ### [72. Edit Distance](https://leetcode.com/problems/edit-distance/description/)
 
-TODO: 
+TODO:
 
 ### [647. Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/description/)
 
 这道题不能使用类似于“以`i`结尾的子字符串”去做，找不到明显的递推关系。
 
-回文的递推关系：对于`q - p > 2`，如果`s[p: q]`是回文，那么`s[p-1: q+1]`是回文。
+回文的递推关系：对于`q - p > 2`，如果`s[p: q]`是回文，且`s[p-1] == s[q]`，那么`s[p-1: q+1]`是回文。
 
-由此可得`dp[i][j]`的含义为`s[i-1: j]`（以`s[i-1]`开始，`s[j-1]`结束的子字符串）是否为回文，对应的状态转移方程为
+由此可得`dp[i][j]`的含义为`s[i: j+1]`（以`s[i]`开始，`s[j]`结束的子字符串）是否为回文，对应的状态转移方程为
 
 ```cpp
 // when 0 <= j-i < 2 (1 or 2 char, not applicable for recursion)
-dp[i][j] = s[i-1] == s[j-1]
-// when j-i > 2, s[i-1: j] depends on s[i: j-1]
-dp[i][j] = (s[i-1] == s[j-1]) && dp[i+1][j-1]
+dp[i][j] = s[i] == s[j]
+// when j-i > 2, s[i: j+1] depends on s[i+1: j]
+dp[i][j] = (s[i] == s[j]) && dp[i+1][j-1]
 ```
 
 值得注意，`dp[i][j]`依赖于`dp[i+1][j-1]`，所以更新顺序应该为`i`从大到小，`j`从小到大，且根据区间的定义，`i <= j`。
@@ -339,7 +339,7 @@ dp[i][j] = (s[i-1] == s[j-1]) && dp[i+1][j-1]
 
 由此可得状态转移方程为
 
-```cpp 
+```cpp
 dp[i][j] = max({
     dp[i+1][j],
     dp[i][j-1],
@@ -420,7 +420,6 @@ if (cur->left == nullptr || cur->right == nullptr) {
     // 上述状态转移的代码
 }
 ```
-
 
 <!-- ### 124. 二叉树中的最大路径和
 ### 1245. 树的直径 (邻接表上的树形 DP)
