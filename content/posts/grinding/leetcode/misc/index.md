@@ -438,6 +438,32 @@ class Solution:
         return results
 ```
 
+### [42. 接雨水](https://leetcode.cn/problems/trapping-rain-water/description)
+
+在列`i`上，能存储的雨水取决于列`i`左侧最高柱子和右侧最高柱子的长度，即
+
+```python
+leftBorderHeight = max(height[:i])
+rightBorderHeight = max(height[i+1:])
+borderHeight = min(leftBorderHeight, rightBorderHeight)
+rain[i] = 0 if borderHeight <= height[i] else borderHeight - height[i]
+```
+
+如果对每个柱子都计算一次左侧和右侧的最大值，时间复杂度就是`O(N)`，由于`N = 2e4`，复杂度太高。
+
+我们借鉴前缀和的思想，对每个列维护前缀最大值和后缀最大值，即
+
+```python
+prefixLeftBorder[i] = max(height[:i]) = max(prefixLeftBorder[i-1], height[i-1])
+suffixRightBorder[i] = max(height[i+1:]) = max(suffixRightBorder[i+1], height[i+1])
+```
+
+### [437. 路径总和 III](https://leetcode.cn/problems/path-sum-iii/description)
+
+求从父节点到子节点路径和为X的路径总数。
+
+方法是在树上计算前缀和，使用类似回溯的方法，维护一个哈希表，记录所经历路径的前缀和（前缀和的值 -> 前缀和出现次数），并在当前节点寻找是否有相减为X的前缀和。
+
 ## 区间
 
 好像按左边界 / 右边界排序后，总会有解法

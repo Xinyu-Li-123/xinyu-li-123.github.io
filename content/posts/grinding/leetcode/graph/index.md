@@ -17,11 +17,11 @@ void dfs(cur_node, path) {
 }
 ```
 
-### Print each layer in tree on separate line 
+### Print each layer in tree on separate line
 
-Use BFS. In each iteration of for loop, print the entire layer. 
+Use BFS. In each iteration of for loop, print the entire layer.
 
-Layer length = queue length 
+Layer length = queue length
 
 ```cpp
 while (!qu.empty()) {
@@ -44,6 +44,7 @@ DFS search the DAG. Backtracking from 0 to n-1.
 ### [200. Number of Islands](https://leetcode.com/problems/number-of-islands/description/)
 
 遍历所有格子。
+
 - 遇到'1'，开始搜索岛屿（dfs or bfs）。走过的格子都标记为已遍历。搜索结束后，岛屿（相连的'1‘）及其边缘（环岛一周的'0'）都被遍历过。
 
 - 遇到'0'继续遍历
@@ -229,7 +230,7 @@ public:
 
 这道题也可以用bfs搜索：对于每一个节点，我们考虑其上下左右的邻居节点，将满足以下两个性质的节点放入队列
 
-1. 该邻居节点没有被访问过 
+1. 该邻居节点没有被访问过
 
 2. 该邻居节点的高度不小于当前节点
 
@@ -542,9 +543,21 @@ vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
 
 ### [133. Clone Graph](https://leetcode.com/problems/clone-graph/description/)
 
-给定一张连通无向图，和一个图中的节点R，深拷贝（deep copy）这张图，并返回拷贝的图中对应节点R的节点。图中每个节点的`val`都是唯一的。
+题：给定一张连通无向图，和一个图中的节点R，深拷贝（deep copy）这张图，并返回拷贝的图中对应节点R的节点。图中每个节点的`val`都是唯一的。
 
 思路是dfs，从R开始dfs，过程中记录拷贝过的节点的`val`和地址。如果dfs过程中遇到拷贝过的节点，直接使用其地址;否则创建一个新的节点。
+
+### [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree)
+
+题：给定一棵二叉树，和节点p和q，寻找p和q的最近公共祖先。
+
+DFS后序遍历树，每次遍历返回在当前树是否找到p和q。找到p（或q）的情况有三种
+
+- 当前节点就是p
+
+- 当前节点左子树包含p
+
+- 当前节点右子树包含p
 
 ## Union-Find Set
 
@@ -635,7 +648,7 @@ public:
 }
 ```
 
-### Redundant Connection I & II 
+### Redundant Connection I & II
 
 ## Minimal Spanning Tree
 
@@ -701,7 +714,7 @@ int costOfMST(vector<vector<int>> weights) {
 }
 ```
 
-### Min Spanning Tree, Prim w/ Min heap.
+### Min Spanning Tree, Prim w/ Min heap
 
 If the graph is sparse (i.e. number of edge is low), we can replace adjacent matrix with a min heap of node, ordered by distance to MST.
 
@@ -723,9 +736,9 @@ Idea: **Greedly rebuild the MST by adding edges with smallest weight that won't 
 
 2. For each top edge on heap
 
-  - if adding it to graph create cycle, pop it
+- if adding it to graph create cycle, pop it
 
-  - if not, add it to the tree
+- if not, add it to the tree
 
 To tell if adding an edge to graph will create cycle, we use union-find set: we check if two endpoints of an edge are in the same set. If so, adding this edge will create a cycle.
 
@@ -809,6 +822,7 @@ if (result.size() < n) {
     cout << "Topological sorting done." << endl;
 }
 ```
+
 ### [207. Course Schedule](https://leetcode.com/problems/course-schedule/description/)
 
 ### [210. Course Schedule II](https://leetcode.com/problems/course-schedule-ii/description/)
@@ -824,3 +838,4 @@ if (result.size() < n) {
 ### Floyd
 
 ### A\*
+

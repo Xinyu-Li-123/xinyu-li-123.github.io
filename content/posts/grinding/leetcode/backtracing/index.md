@@ -91,3 +91,8 @@ public:
 ### [216. Combination Sum III](https://leetcode.com/problems/combination-sum-iii/description/)
 
 Done.
+
+### [131. 分割回文串](https://leetcode.cn/problems/palindrome-partitioning/description)
+
+先统计每个子串`s[i:j]`是否是回文，这里可以使用 DP 。然后回溯计算所有可能分割方法。
+

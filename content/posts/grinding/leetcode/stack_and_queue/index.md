@@ -5,6 +5,36 @@ draft: false
 mathjax: false
 tags: ['Grinding', 'LeetCode']
 ---
+## 栈
+
+### [394. 字符串解码](https://leetcode.cn/problems/decode-string/description)
+
+将字符串类似`3[abc]`的字符串转换为`abcabcabc`,`2[abc]3[cd]ef`转换为`abcabccdcdcdef`。
+
+解法是从右往左扫描字符串，维护一个栈`stack`，栈里第 k 个元素是对于嵌套层数为 n - k 的方括号，当前能构造的字符串。具体逻辑如下：
+
+- On "]", create empty str and push to stack
+
+- On chars, prepend to str at stack top
+
+- On "[", pop str from stack, ready for duplicate by k
+
+- On num, duplicate prev str, and push new str to top stack
+
+### [295. 数据流的中位数](https://leetcode.cn/problems/find-median-from-data-stream/description)
+
+设计一个类`MedianFinder`，提供两个 API :
+
+- `addNum(num: int) -> None`：添加一个数字
+
+- `findMedian() -> int`：找出添加过的所有数字的中位数
+
+解法思路是维护一个较小数的最大堆`smallNums`，和较大数的最小堆`largeNums`，满足以下条件
+
+- `smallNums[i] <= smallNums.top() <= largeNums.top() <= largeNums[j]` for all i, j
+
+- 平分数组：`len(smallNums) == len(largeNums) or len(smallNums == len(largeNums) + 1`。这样，中位数就是`smallNums.top()`或`(smallNums.top() + largeNums.top()) / 2`
+
 ## 单调队列
 
 ### [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/description/)
@@ -66,7 +96,7 @@ int trap(vector<int>& height) {
 }
 ```
 
-#### Prev solution:
+#### Prev solution
 
 1. Scan from left to right to find all ponds with left bar <= right bar;
 
@@ -136,3 +166,4 @@ int largestRectangleArea(vector<int>& heights) {
     return maxRect;
 }
 ```
+
