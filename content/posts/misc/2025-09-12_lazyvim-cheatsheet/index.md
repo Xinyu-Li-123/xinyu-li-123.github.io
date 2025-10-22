@@ -23,4 +23,26 @@ How path resolution works in lua
 
 ### Plugin
 
+### What happens in NeoVim, step-by-step from `nv .`
+
+`nv .` will open the neovim, but have you wondered what happens in the process? How is config files read? What is running? etc. We will investigate this process step by step from the very beginning.
+
 ## LazyVim
+
+### Plugin
+
+### What happens in LazyVim, step-by-step from `nv .`
+
+## Common use cases
+
+These are common use cases, some may apply to both NeoVim and LazyVim, while others are LazyVim specific.
+
+### Change color theme
+
+### Configure LSP for a language
+
+[Language Server Protocl (LSP)](https://microsoft.github.io/language-server-protocol/) defines a unified interface for editors to interact with language server. A language server is a program that analyze codebase and provide useful functionalities like "find all usage of a variable in the workspace" (with `textDocument/reference` request). We can configure LSP in LazyVim.
+
+### Debug a project with the language DAP
+
+Similar to LSP, [Debug Adapter Protocol (DAP)](https://microsoft.github.io/debug-adapter-protocol//) defines a unified interface for editors to interact with debuggers of different languages. It allows you to launch or attach to a process, and do stuff like "set a breakpoint" or "inspect current stack" within the editor. And similarly, we can configure DAP in LazyVim.
