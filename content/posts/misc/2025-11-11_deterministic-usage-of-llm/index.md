@@ -5,7 +5,7 @@ title: '如何消除 LLM 的不确定性？'
 ---
 
 LLM （GPT）的本质是一个概率模型。这意味着假如我们问 ChatGPT 100 次“1 + 1 等于几”，无论实际上回答正确的概率有多高，从数学理论上，我们都无法保证 ChatGPT 的回答一直是 2 [^1]。
-作为聊天助手，这没什么问题，毕竟这种错误的概率很小，而且错了也没啥影响。但如果我们想把 LLM 融入代码程序中，像这样把它当成一个函数调用，那我们就必须要考虑到 LLM 本质上的不确定性。
+作为聊天助手，这没什么问题，毕竟这种错误的概率很小，而且错了也没啥影响。但如果我们想把 LLM 融入代码程序中，把它当成一个函数调用，那我们就必须要考虑到 LLM 本质上的不确定性。例如下面这段代码：
 
 ```python
 def main():
@@ -17,34 +17,11 @@ def main():
   print(result) 
 ```
 
-## LLM 适合做什么事？
+在代码中，我们应当**把 LLM 当成人类**，这意味着：
 
-一句话总结，在代码中，我们应当**把 LLM 的输出当成人类的输出**
+- **LLM 适合做人适合的事**：对比程序，人类更适合处理无法用代码解决的、不确定因素多的事情梦，例如评判一段文本的情感；而一些代码已经做的很好的事情，就不应该让人来做，例如计算两个大数相加。
 
-- 对比程序，人类更适合处理无法用代码解决的、不确定因素多的事情。例如评判一段文本的情感。
-
-- 一段程序在处理人类的输入时，需要做各种验证，例如检查格式、语法语义错误（输出的数字是否是正整数，输入的除法是否有除以 0）。
-
-### 反例：1 + 1 = ?
-
-```python
-def ask_llm(prompt: str) -> str:
-  # 向 LLM 输入 prompt，返回输出的字符串
-  return "xxx"
-
-def llm_add(x: int, y: int) -> int:
-  return int(ask_llm(f"输出 {x} + {y} 的结果"))
-
-def main():
-  nums_str = input("请输入两个数字：")
-  x, y = [int(n) for n in nums_str.split(" ")]
-  ans = ask_llm(x, y)
-  print(f"LLM 跟我说 {x} + {y} = {ans}")
-```
-
-在这段代码中，验证 LLM 输出的唯一方法就是用 python 也算一遍`x + y`。emmmmm
-
-### 正例：生成一个特定格式的 JSON 文件
+- **应当像处理用户输出那样处理 LLM 的输出**：一段程序在处理人类的输入时，需要做各种验证，例如检查格式、语法语义错误（输出的数字是否是正整数，输入的除法是否有除以 0）。同样的，我们也应该对 LLM 的输出做相似的验证。
 
 When using LLM, one of the major concern is the **indeterminism of output**. For example, if I need LLM to generate a JSON of a specific schema for 100 times, I can't guarantee that, in all 100 times, LLM will generate a valid JSON, or a JSON following the schema. This is fine when using LLM as a chatbot, but unacceptable when using LLM as part of a program.
 
@@ -127,6 +104,25 @@ Here is how I work with LLM in this case:
   print("Frequency of each category:")
   print(llm_out["category"].value_counts())
   ```
+
+### 生成一个特定格式的 JSON 文件
+
+我们希望 LLM 生成一系列不同类型的变量的值，用来填充一个 jinja2 模板。具体的，我们想让 LLM 阅读一个 python 代码库，生成一个 Dockerfile 用来配置环境。但直接生成一个完整的 Dockerfile 自由度太高了，LLM 可能犯错的地方太多了。因此，我们预先确定一个 Dockerfile 的模板，然后只要求 LLM 填充其中的变量。
+
+```python
+def main():
+  template: str = get_template_from_path("/path/to/jinja2_template")
+  args = parse_args()
+  codebase_path = get_codebase_from_config(args.config)
+  decisions = ask_llm(codebase_path)
+  output = fill_template_with_vars(decisions, template)
+```
+
+我们可以制定一个 JSON Schema，用来规定生成的 JSON Object 的每个域的类型和值域，然后使用代码验证 LLM 的输出。
+
+```json
+TODO: ...
+```
 
 ### 把一份巨大的 Tex 文件按章节分成多个小的 Tex 文件
 
