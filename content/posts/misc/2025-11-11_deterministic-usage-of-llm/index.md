@@ -5,35 +5,17 @@ title: '如何消除 LLM 的不确定性？'
 ---
 
 LLM （GPT）的本质是一个概率模型。这意味着假如我们问 ChatGPT 100 次“1 + 1 等于几”，无论实际上回答正确的概率有多高，从数学理论上，我们都无法保证 ChatGPT 的回答一直是 2 [^1]。
-作为聊天助手，这没什么问题，毕竟这种错误的概率很小，而且错了也没啥影响。但如果我们想把 LLM 融入代码程序中，把它当成一个函数调用，那我们就必须要考虑到 LLM 本质上的不确定性。例如下面这段代码：
+作为聊天助手，这没什么问题，毕竟这种错误的概率很小，而且错了也没啥影响。但如果我们想把 LLM 融入代码程序中，把它当成一个函数调用，那我们就必须要考虑到 LLM 本质上的不确定性。
 
-```python
-def main():
-  args = parse_args()
-  step_1_ans = step_1(args)
-  # A magical step where we ask LLM for an answer
-  step_2_ans = ask_llm(step_1_ans)
-  result = step_3(step_2_ans)
-  print(result) 
-```
+在依赖 LLM 的代码中，我认为我们应当**把 LLM 当成人类对待**，这意味着：
 
-在代码中，我们应当**把 LLM 当成人类**，这意味着：
+- **LLM 适合做需要人来做的事**：对比程序，人类（LLM）更适合处理无法用代码解决的、不确定因素多的事情，例如评判一段文本的情感；而一些代码已经做的很好的事情，就不应该让人（LLM）来做，例如质因数分解。
 
-- **LLM 适合做人适合的事**：对比程序，人类更适合处理无法用代码解决的、不确定因素多的事情梦，例如评判一段文本的情感；而一些代码已经做的很好的事情，就不应该让人来做，例如计算两个大数相加。
-
-- **应当像处理用户输出那样处理 LLM 的输出**：一段程序在处理人类的输入时，需要做各种验证，例如检查格式、语法语义错误（输出的数字是否是正整数，输入的除法是否有除以 0）。同样的，我们也应该对 LLM 的输出做相似的验证。
-
-When using LLM, one of the major concern is the **indeterminism of output**. For example, if I need LLM to generate a JSON of a specific schema for 100 times, I can't guarantee that, in all 100 times, LLM will generate a valid JSON, or a JSON following the schema. This is fine when using LLM as a chatbot, but unacceptable when using LLM as part of a program.
-
-Compared to chat sessions, programs need determinism: `print(1 + 1)` will always print `2` in python, no matter what version of python you use, or what environment you are in. Yet in the case of LLM, nothing has a 100% probability, even when asking LLM what 1 + 1 is. This is just the nature of LLM, that it is based on a probabilistic math model. This doesn't mean we can't have determinism when using LLM.
-
-The one and only way to bring determinism to LLM output is to **run deterministic check on LLM output**, the same way we would validate a human input. This is so obvious, yet often forgotten when designing a workflow involving LLM.
-
-Beyond JSON validation, there are also many other use cases where we can apply similar method to deterministically validate LLM output, and eliminate the possibility of treating an invalid output as valid. The section below shows a list of some very specific examples that I have personally encountered.
+- **应当像验证人类输入一样，使用代码验证 LLM 的输出内容**：一段程序在处理人类的输入时，需要做各种验证，例如检查格式、语法语义错误（输出的数字是否是正整数，输入的除法是否有除以 0）。同样的，我们也应该对 LLM 的输出做相似的验证。
 
 ## 具体案例
 
-以下是一些 LLM + Validation 的具体案例
+以下是一些对 LLM 输出内容进行验证的具体案例
 
 ### 对一个文本文档的每一行生成一个标签
 
@@ -107,7 +89,9 @@ Here is how I work with LLM in this case:
 
 ### 生成一个特定格式的 JSON 文件
 
-我们希望 LLM 生成一系列不同类型的变量的值，用来填充一个 jinja2 模板。具体的，我们想让 LLM 阅读一个 python 代码库，生成一个 Dockerfile 用来配置环境。但直接生成一个完整的 Dockerfile 自由度太高了，LLM 可能犯错的地方太多了。因此，我们预先确定一个 Dockerfile 的模板，然后只要求 LLM 填充其中的变量。
+> 源自这个 GitHub Repository：[eval-setup-agent](https://github.com/CMU-MCDS-Capstone-LLM/eval-setup-agent) 。
+
+我们希望 LLM 生成一系列不同类型的变量的值，用来填充一个 jinja2 模板，以此生成一个 JSON 文件。具体来说，我们想让 LLM 阅读一个 python 的代码，生成一个 Dockerfile 用来配置该代码库的环境（例如需要在系统安装 Postgresql，并在 python 的虚拟环境里运行 `pip install -r dep/requirements-dev.txt`）。但直接生成一个完整的 Dockerfile 自由度太高了，LLM 可能犯错的地方太多了。因此，我们预先确定一个 Dockerfile 的模板，然后只要求 LLM 填充其中的变量。
 
 ```python
 def main():
@@ -127,6 +111,33 @@ TODO: ...
 ### 把一份巨大的 Tex 文件按章节分成多个小的 Tex 文件
 
 LLM will generate one tex file for one section. We concatenate all section tex, and compare with original big text using `diff`
+
+## 一些有趣的反例
+
+学习一个东西的一个方法是举反例，学习 LLM 的使用也不例外。在这个章节里，我们收集了一些使用 LLM 的反面教材，有的只是思维实验，有的是在真实世界中遇到的案例。
+
+### 万能的自然语言编译器
+
+既然 LLM 那么有用，干脆一步到位，也别说什么取代程序员了，直接取代编程语言吧。我们设计一个基于 LLM 的自然语言编译器：
+
+> 给定一段自然语言描述的需求，和一个目标平台（如 x86_64 ），通过 LLM 直接输出机器码，将自然语言翻译成可以跑在目标平台的可执行文件（如 ELF ）。
+
+我们假设在 x86_64 平台，使用`debian:bookworm-slim` 的 Docker 镜像作为执行程序的环境（开个 Docker 以防 LLM 把我电脑炸了，毕竟我们在做得是让 LLM 在我们的机器上执行任意程序）。
+
+按照我们前文的说法，我们应当把 LLM 当成人类，人类怎么和电脑互动，LLM 就怎么和电脑互动。那人该怎么手动输入机器码，生成一个可执行文件呢？问了一下 ChatGPT，一个简单的方法是在命令行里使用`xxd`，在 stdin 里输入十六进制，输出到一个文件。例如：
+
+```bash
+cat <<'EOF' | xxd -r -p > my_prog
+<hex num> <hex num> <hex num> ...
+EOF
+
+chmod +x my_prog
+./my_prog
+```
+
+我们使用 ELF 格式（Unix / Unix-like 系统，x86 处理器上的可执行文件格式）。
+
+## 脚注
 
 [^1]: 准确的说，这里其实有两层问题：
 
