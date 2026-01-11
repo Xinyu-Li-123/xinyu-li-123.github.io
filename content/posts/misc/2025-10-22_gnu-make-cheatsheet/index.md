@@ -616,4 +616,8 @@ TOOD: Why we want to do this?
 
 ### Dry run: print bash commands but don't execute
 
-`make -n`
+`make -nB`
+
+- `-n`: only print, don't execute
+
+- `-B`: always make target, even if already up to date.
