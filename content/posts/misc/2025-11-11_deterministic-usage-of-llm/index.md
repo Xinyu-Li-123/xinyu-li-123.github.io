@@ -1,8 +1,30 @@
 ---
 date: '2025-11-11T21:46:57-05:00'
 draft: false
-title: '如何消除 LLM 的不确定性？'
+title: '如何减少 LLM 的不确定性？'
 ---
+
+## 关于 LLM 的输入
+
+### 使用模板，程序化生成输入
+
+尽量降低人类输入的灵活度
+
+[dspy](https://dspy.ai/)
+
+[jinja](https://jinja.palletsprojects.com/en/stable/)
+
+### Agent，Tool Use，Function Call
+
+使用更加有效地获取信息
+
+与环境互动，生成信息，获取信息
+
+保险起见，应该默认开启只读模式（plan mode）
+
+## 关于 LLM 的输出
+
+从输出的角度，我们可以通过对输出进行程序化验证，消灭 LLM 输出的不确定性。
 
 LLM （GPT）的本质是一个概率模型。这意味着假如我们问 ChatGPT 100 次“1 + 1 等于几”，无论实际上回答正确的概率有多高，从数学理论上，我们都无法保证 ChatGPT 的回答一直是 2 [^1]。
 作为聊天助手，这没什么问题，毕竟这种错误的概率很小，而且错了也没啥影响。但如果我们想把 LLM 融入代码程序中，把它当成一个函数调用，那我们就必须要考虑到 LLM 本质上的不确定性。
@@ -13,11 +35,13 @@ LLM （GPT）的本质是一个概率模型。这意味着假如我们问 ChatGP
 
 - **应当像验证人类输入一样，使用代码验证 LLM 的输出内容**：一段程序在处理人类的输入时，需要做各种验证，例如检查格式、语法语义错误（输出的数字是否是正整数，输入的除法是否有除以 0）。同样的，我们也应该对 LLM 的输出做相似的验证。
 
+  值得注意的是，通过程序化，我们只能将 LLM 的输出控制在一个人为划定的范围，但这并不能避免 LLM 犯错。比如，我们可以预先给定一批标签，然后让 LLM 对一段文本选择一个标签。我们可以通过程序化验证保证 LLM 要么输出我们预设的标签，要么报错，而不会输出一个不存在的标签；但我们无法保证 LLM 对文本做出的分类是正确的。
+
 ## 具体案例
 
 以下是一些对 LLM 输出内容进行验证的具体案例
 
-### 对一个文本文档的每一行生成一个标签
+### [输出] 对一个文本文档的每一行生成一个标签
 
 Given
 
@@ -87,7 +111,7 @@ Here is how I work with LLM in this case:
   print(llm_out["category"].value_counts())
   ```
 
-### 生成一个特定格式的 JSON 文件
+### [输出] 生成一个特定格式的 JSON 文件
 
 > 源自这个 GitHub Repository：[eval-setup-agent](https://github.com/CMU-MCDS-Capstone-LLM/eval-setup-agent) 。
 
@@ -108,7 +132,7 @@ def main():
 TODO: ...
 ```
 
-### 把一份巨大的 Tex 文件按章节分成多个小的 Tex 文件
+### [输出] 把一份巨大的 Tex 文件按章节分成多个小的 Tex 文件
 
 LLM will generate one tex file for one section. We concatenate all section tex, and compare with original big text using `diff`
 
@@ -116,7 +140,7 @@ LLM will generate one tex file for one section. We concatenate all section tex, 
 
 学习一个东西的一个方法是举反例，学习 LLM 的使用也不例外。在这个章节里，我们收集了一些使用 LLM 的反面教材，有的只是思维实验，有的是在真实世界中遇到的案例。
 
-### 万能的自然语言编译器
+### [输入, 输出] 万能的自然语言编译器
 
 既然 LLM 那么有用，干脆一步到位，也别说什么取代程序员了，直接取代编程语言吧。我们设计一个基于 LLM 的自然语言编译器：
 
@@ -136,6 +160,18 @@ chmod +x my_prog
 ```
 
 我们使用 ELF 格式（Unix / Unix-like 系统，x86 处理器上的可执行文件格式）。
+
+## 相关框架
+
+### [dspy](https://dspy.ai/)
+
+### 这个演讲
+
+[一个软工人的辩白](https://www.bilibili.com/video/BV1KEinBtEU6)，演讲者jyy
+
+第二部分和本文相关
+
+TODO: Summarize that talk in this blog post
 
 ## 脚注
 
