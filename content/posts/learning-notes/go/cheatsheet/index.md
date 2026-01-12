@@ -5,4 +5,21 @@ title: 'Go Cheatsheet'
 mathjax: true
 ---
 
-Under construction...
+- hello world program
+
+- declaration
+
+- variable types
+
+- formatted print
+
+- functions
+
+- control flows
+
+- structs and methods
+
+  go uses structs + methods instead of classes
+
+- error handling
+
