@@ -111,7 +111,7 @@ Here is how I work with LLM in this case:
   print(llm_out["category"].value_counts())
   ```
 
-### [输出] 生成一个特定格式的 JSON 文件
+### [输出] 使用 jinja 模板，填空生成一个特定格式的 JSON 文件
 
 > 源自这个 GitHub Repository：[eval-setup-agent](https://github.com/CMU-MCDS-Capstone-LLM/eval-setup-agent) 。
 
@@ -126,10 +126,244 @@ def main():
   output = fill_template_with_vars(decisions, template)
 ```
 
-我们可以制定一个 JSON Schema，用来规定生成的 JSON Object 的每个域的类型和值域，然后使用代码验证 LLM 的输出。
+我们可以制定一个 [JSON Schema](https://json-schema.org/)，用来规定生成的 JSON Object 的每个域的类型和值域，然后使用代码验证 LLM 的输出。
 
 ```json
 TODO: ...
+```
+
+### [输出] 选择性地将 Latex VSCode snippet 转换成 Typst VSCode snippet
+
+Vscode snippet 是一个 JSON 对象。我想将一个现有的 Latex 的 VSCode Snippet 转换成 Typst 的 VSCode snippet。但 Latex 中有些 snippet 没什么必要转换成 Typst（例如`\subsubsection{xxx}`，Typst 直接打`=== xxx`就行）。我的思路是让 LLM Chatbot 生成 JSON-only 的输出，然后使用 JSON Schema 过一遍格式，再用 python 脚本确认 LLM 没有凭空捏造新的 snippet。
+
+LLM 的输出格式是
+
+- 如果应该生成 Typst snippet，输出
+
+  ```json
+  {
+    "snippet-name": {
+      "is_needed_for_typst": { "const": true },
+      "prefix": { "type": "string", "minLength": 1 },
+      "body": { "type": "string" },
+      "description": { "type": "string" }
+
+    }
+  }
+  ```
+
+- 如果不应该生成 Typst snippet，输出
+
+  ```json
+  {
+    "snippet-name": {
+      "is_needed_for_typst": { "const": false },
+      "reason": { "type": "string", "minLength": 1 }
+    }
+  }
+  ```
+
+以下是我的 prompt 和脚本：
+
+#### Prompt
+
+Given the following latex.json snippet file. For each snippet, determine if it's needed in typst. If not, provide a one-line reason. If needed, generate a typst version of keymap. You must follow this json schema, and output in the same order as the provided latex json file:
+
+JSON Schema for your output (`schema.json`):
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": { "$ref": "#/$defs/typstEntry" },
+
+  "$defs": {
+    "typstEntry": {
+      "oneOf": [
+        { "$ref": "#/$defs/needed" },
+        { "$ref": "#/$defs/notNeeded" }
+      ]
+    },
+
+    "needed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["is_needed_for_typst", "prefix", "body", "description"],
+      "properties": {
+        "is_needed_for_typst": { "const": true },
+        "prefix": { "type": "string", "minLength": 1 },
+        "body": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+
+    "notNeeded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["is_needed_for_typst", "reason"],
+      "properties": {
+        "is_needed_for_typst": { "const": false },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
+```
+
+[`latex.json`](https://github.com/rafamadriz/friendly-snippets/blob/main/snippets/latex.json):
+
+```json
+{
+    "item": {
+        "prefix": "item",
+        "body": "\n\\item ",
+        "description": "\\item on a newline"
+    },
+    "subscript": {
+        "prefix": "__",
+        "body": "_{${1:${TM_SELECTED_TEXT}}}",
+        "description": "subscript"
+    },
+    "superscript": {
+        "prefix": "**",
+        "body": "^{${1:${TM_SELECTED_TEXT}}}",
+        "description": "superscript"
+    },
+    <Actual content truncated due to its length>
+}
+```
+
+#### 脚本
+
+文件夹结构
+
+```
+.
+├── latex.json
+├── llm-output.json
+├── llm-output-to-snippet.py
+├── schema.json
+├── typst.json
+└── validate-json.py
+```
+
+`validate-json.py`: 根据 `schema.json`（），验证 LLM 输出的 JSON `llm-output.json` 是否符合标准。
+
+```python
+#!/usr/bin/env python3
+#./validate-json.py
+import json
+import sys
+from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import ValidationError, SchemaError
+
+
+def load_json(path: str):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def validate_schema(
+    schema_path: str = "schema.json", instance_path: str = "llm-output.json"
+) -> int:
+    try:
+        schema = load_json(schema_path)
+        instance = load_json(instance_path)
+
+        # Ensure the schema itself is valid for this draft
+        Draft202012Validator.check_schema(schema)
+
+        # Validate instance
+        validator = Draft202012Validator(schema, format_checker=FormatChecker())
+        errors = sorted(validator.iter_errors(instance), key=lambda e: list(e.path))
+
+        if not errors:
+            print(f"OK: '{instance_path}' is valid against '{schema_path}'")
+            return 0
+
+        print(f"FAIL: '{instance_path}' is NOT valid against '{schema_path}'")
+        for err in errors:
+            path = "$" + "".join(
+                f"[{p!r}]" if isinstance(p, str) else f"[{p}]" for p in err.path
+            )
+            print(f"- {path}: {err.message}")
+        return 1
+
+    except FileNotFoundError as e:
+        print(f"File not found: {e.filename}", file=sys.stderr)
+        return 2
+    except json.JSONDecodeError as e:
+        print(
+            f"Invalid JSON in '{e.doc}' at line {e.lineno}, col {e.colno}: {e.msg}",
+            file=sys.stderr,
+        )
+        return 3
+    except SchemaError as e:
+        print(f"SchemaError: {e.message}", file=sys.stderr)
+        return 4
+    except ValidationError as e:
+        # In case you switch to validator.validate(...) elsewhere
+        print(f"ValidationError: {e.message}", file=sys.stderr)
+        return 5
+
+
+def validate_content(input_path: str, output_path: str) -> int:
+    with open(input_path, "r") as f:
+        input_json = json.load(f)
+
+    with open(output_path, "r") as f:
+        output_json = json.load(f)
+
+    input_keys = list(input_json.keys())
+    output_keys = list(output_json.keys())
+    assert sorted(input_keys) == sorted(output_keys), (
+        "Input and output doesn't have same key content"
+    )
+
+    print(f"OK: {input_path} and {output_path} have same key content.")
+    return 0
+
+
+def main(schema_path: str, input_path: str, output_path: str) -> int:
+    ret = validate_schema(schema_path, output_path)
+    if ret != 0:
+        return ret
+
+    ret = validate_content(input_path, output_path)
+    return ret
+
+
+if __name__ == "__main__":
+    schema_path = sys.argv[1] if len(sys.argv) > 1 else "schema.json"
+    input_path = sys.argv[2] if len(sys.argv) > 2 else "latex.json"
+    output_path = sys.argv[2] if len(sys.argv) > 2 else "llm-output.json"
+    raise SystemExit(main(schema_path, input_path, output_path))
+```
+
+`llm-output-to-snippet.py`：提取被 LLM 标记为 `is_needed_for_typst: true` 的 snippet。
+
+```python
+#!/usr/bin/env python3
+#./llm-output-to-snippet.py
+import json
+from typing import Dict
+
+llm_output_path = "llm-output.json"
+snippet_output_path = "typst.json"
+
+with open(llm_output_path, "r") as f:
+    llm_output_json: Dict[str, dict] = json.load(f)
+
+snippet_json = {}
+for k, v in llm_output_json.items():
+    if not v["is_needed_for_typst"]:
+        continue
+
+    snippet_json[k] = v
+    snippet_json[k].pop("is_needed_for_typst")
+
+with open(snippet_output_path, "w") as f:
+    json.dump(snippet_json, f)
 ```
 
 ### [输出] 把一份巨大的 Tex 文件按章节分成多个小的 Tex 文件
