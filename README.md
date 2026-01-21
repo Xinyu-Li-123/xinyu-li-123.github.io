@@ -4,6 +4,12 @@ This is the github repo for my blog website. It's built with [Hugo](https://gohu
 
 To create posts in VSCode, you can install the [Insert Date String](https://marketplace.visualstudio.com/items?itemName=jsynowiec.vscode-insertdatestring) extension, so that it's easier to fill in the `date` attribute in the front matter of the post.
 
+## Setup
+
+- Set up Hugo per doc
+
+- Set up pagefind per [doc](<https://pagefind.app/docs/>)
+
 ## TODO
 
 - [ ] Allow custom code colorscheme
@@ -16,6 +22,6 @@ To create posts in VSCode, you can install the [Insert Date String](https://mark
 
     Either there is a feature in hermit v2 that does this, or we will have to implement it ourselves.
 
-- [ ] Change the color scheme of code block to lighe mode as well.
+- [ ] Change the color scheme of code block to light mode as well.
 
-- [ ] Add a "go back to parent directory" button for each post / folder
+- [v] Add a "go back to parent directory" button for each post / folder

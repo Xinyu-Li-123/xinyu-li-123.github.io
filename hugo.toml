@@ -6,7 +6,7 @@
 
 baseURL = 'https://xinyu-li-123.github.io/'
 defaultContentLanguage = "en"
-defaultContentLanguageInSubdir = true
+defaultContentLanguageInSubdir = false
 theme = "hermit-v2"
 
 #[languages]
