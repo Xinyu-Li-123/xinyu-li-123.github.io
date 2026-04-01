@@ -191,6 +191,20 @@ We use [Krita](https://krita.org/en/) as an example. Krita is a professional fre
     update-desktop-database ~/.local/share/applications/
     ```
 
+    If you want to allow opening certain type of file with this app, you should append a `%f` to `Exec`, and define a `MimeType`, such as
+
+    ```ini
+    [Desktop Entry]
+    Name=MyApp
+    Exec=/home/<username>/Applications/krita/krita.AppImage %f
+    Icon=/home/<username>/Applications/krita/krita.png
+    Type=Application
+    Categories=Utility;
+    MimeType=application/x-krita;
+    ```
+
+    Here, `application/x-krita`  allows us to open `*.kra` file with Krita. Now, when you right click a file, and choose `Properties > Open With`, you will see Krita in the list of applications you can use to open this file.
+
 Now, you should be able to see the Krita icon in the GNOME application menu!
 
 ### Update and Delete an AppImage
